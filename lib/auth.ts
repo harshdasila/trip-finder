@@ -39,7 +39,8 @@ export const NEXT_AUTH = {
     //   session: {
     //     strategy: "jwt",
     //   },
-    //   pages: {
-    //     signIn: "/auth/signin", // Optional custom page
-    //   },
+      pages: {
+        signIn: "/auth/signin", // Optional custom page
+        signUp: "/auth/signup"
+      },
 }
