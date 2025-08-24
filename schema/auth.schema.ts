@@ -8,6 +8,7 @@ export const siginSchema = z.object({
 export const signupSchema = z.object({
     name: z.string().min(1, "Name is required."),
     email: z.email("Invalid email address.").min(1, "Email is required"),
+    imageUrl: z.string().optional(),
     password: z
         .string()
         .min(1, "Please enter your Password.")

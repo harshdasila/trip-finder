@@ -16,6 +16,7 @@ export const signup = async (formData: FormData): Promise<any> => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
+    const profileImageUrl = formData?.get('profileImageUrl') as string;
     const isUserExist = await ifUserExists(email);
     if (isUserExist) {
         return;
@@ -25,7 +26,8 @@ export const signup = async (formData: FormData): Promise<any> => {
         data:{
             user_email: email,
             user_password: hashedPassword,
-            user_name: name
+            user_name: name,
+            user_image: profileImageUrl ?? null
         } 
         
     });
@@ -35,7 +37,6 @@ export const signup = async (formData: FormData): Promise<any> => {
 export const signin = async (formData: FormData): Promise<any> => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    console.log(email,password,'on server')
 
     try {
         const user = await prisma.user.findFirst({
