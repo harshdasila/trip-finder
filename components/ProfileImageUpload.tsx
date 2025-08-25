@@ -8,9 +8,7 @@ export function ProfileImageUpload({
 }: ProfileImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(currentImage);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -18,7 +16,6 @@ export function ProfileImageUpload({
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "trip-finder-avatars");
-    // formData.append("folder", "trip-finder-avatars/avatars");
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -33,7 +30,7 @@ export function ProfileImageUpload({
     return data.secure_url;
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -50,24 +47,20 @@ export function ProfileImageUpload({
     }
 
     setError(null);
-    setSelectedFile(file);
-    
-    // Create preview URL
+    setUploading(true);
+
+    // Create preview URL immediately
     const previewUrl = URL.createObjectURL(file);
     setPreviewImage(previewUrl);
-    setShowConfirmation(true);
-  };
-
-  const handleUploadConfirm = async () => {
-    if (!selectedFile) return;
-
-    setUploading(true);
-    setShowConfirmation(false);
 
     try {
-      const uploadedUrl = await uploadImage(selectedFile);
+      // Auto-upload the image
+      const uploadedUrl = await uploadImage(file);
+      
+      // Replace preview with uploaded URL
       setPreviewImage(uploadedUrl);
       setProfileImageUrl?.(uploadedUrl);
+      
       console.log("Image uploaded successfully:", uploadedUrl);
     } catch (error) {
       setError("Failed to upload image. Please try again.");
@@ -76,30 +69,19 @@ export function ProfileImageUpload({
       console.error("Upload failed:", error);
     } finally {
       setUploading(false);
-      setSelectedFile(null);
-    }
-  };
-
-  const handleUploadCancel = () => {
-    setShowConfirmation(false);
-    setPreviewImage(currentImage);
-    setSelectedFile(null);
-    setError(null);
-    
-    // Clear file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      // Clean up the preview URL to prevent memory leaks
+      URL.revokeObjectURL(previewUrl);
     }
   };
 
   const handleCircleClick = () => {
-    fileInputRef.current?.click();
+    if (!uploading) {
+      fileInputRef.current?.click();
+    }
   };
 
   const handleRemoveImage = () => {
     setPreviewImage(null);
-    setSelectedFile(null);
-    setShowConfirmation(false);
     setError(null);
     setProfileImageUrl?.(null);
     
@@ -112,7 +94,7 @@ export function ProfileImageUpload({
     <div className="flex flex-col items-center space-y-4">
       {/* Circular Image Preview */}
       <div 
-        className={`relative cursor-pointer group`}
+        className={`relative cursor-pointer group ${uploading ? 'cursor-not-allowed' : ''}`}
         style={{ width: size, height: size }}
         onClick={handleCircleClick}
       >
@@ -141,18 +123,20 @@ export function ProfileImageUpload({
           )}
         </div>
         
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <svg 
-            className="w-8 h-8 text-white" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
+        {/* Overlay on hover - only show if not uploading */}
+        {!uploading && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+            <svg 
+              className="w-8 h-8 text-white" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+        )}
         
         {/* Loading spinner */}
         {uploading && (
@@ -172,33 +156,15 @@ export function ProfileImageUpload({
         disabled={uploading}
       />
 
-      {/* Upload confirmation buttons */}
-      {showConfirmation && !uploading && (
-        <div className="flex space-x-3">
-          <button
-            onClick={handleUploadConfirm}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-          >
-            Upload Image
-          </button>
-          <button
-            onClick={handleUploadCancel}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-
-      {/* Remove image button */}
-      {previewImage && !showConfirmation && !uploading && (
+      {/* Remove image button - only show if image exists and not uploading */}
+      {/* {previewImage && !uploading && (
         <button
           onClick={handleRemoveImage}
           className="text-red-600 hover:text-red-800 text-sm transition-colors duration-200"
         >
           Remove Image
         </button>
-      )}
+      )} */}
 
       {/* Status messages */}
       {uploading && (

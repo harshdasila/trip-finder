@@ -8,3 +8,6 @@ export interface ProfileImageUploadProps {
   currentImage?: string | null;
   size?: number; // Circle size in pixels
 }
+export interface ErrorMessageProps {
+    text: string | null;
+}

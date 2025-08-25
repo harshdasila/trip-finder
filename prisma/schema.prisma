@@ -10,10 +10,11 @@ datasource db {
 
 model User {
   user_id         Int       @id @default(autoincrement())
+  user_google_id  String?   @unique
   user_name       String
   user_email      String    @unique
   user_image      String?
-  user_password   String
+  user_password   String?
   trips           Trip[]    @relation("trip")
   requests        Request[]
   owned_trips     Trip[]    @relation("trip_owner")
