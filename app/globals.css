@@ -1,1 +1,104 @@
 @import "tailwindcss";
+html {
+  --defaultLabelColor: #9794aa;
+  --defaultBtnColor: #4CAF50
+}
+sup{
+  color: red;
+}
+.font-poppins{
+  font-family: var(--font-poppins);
+}
+/* Layout */
+.main-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+}
+
+.signup-image-container {
+  flex: 1;
+  height: 100%;
+  background-image: url("/assets/signup.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  color: white;
+  border-radius: 0 20px 0 0;
+}
+
+.signup-overlay-text {
+  position: absolute;
+  top: 30px;
+  left: 60px;
+  line-height: 38px;
+  font-size: 40px;
+  font-weight: 400;
+  color: #ffffff;
+  font-family: var(--font-poppins);
+}
+
+.signup-form-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: inherit;
+}
+
+.signup-form-box {
+  width: 430px;
+  padding: 24px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.signup-title {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* Optional: button styling */
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--defaultBtnColor);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #005ad1;
+}
+
+.signup-form-box {
+  background-color: inherit;
+}
+
+.input-label {
+  color: var(--defaultLabelColor);
+  font-family: var(--font-poppins);
+  font-weight: 500;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 25px;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+
+.input-containers{
+  display: flex;
+  flex-direction: column;
+  /* margin-bottom: 10px; */
+}
