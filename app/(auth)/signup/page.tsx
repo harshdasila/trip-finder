@@ -9,6 +9,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "@/components/ErrorMessage";
 import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const page = () => {
   const {
@@ -21,10 +23,10 @@ const page = () => {
   });
 
   const handleGoogleLogin = () => {
-      signIn("google", {
-        callbackUrl: "/dashboard",
-      });
-    };
+    signIn("google", {
+      callbackUrl: "/dashboard",
+    });
+  };
 
   const onSubmit = async (data: signUpFormData) => {
     const schemaParse = signupSchema.safeParse(data);
@@ -50,7 +52,7 @@ const page = () => {
           </div>
         </div>
         <div className="signup-form-container">
-          <div className="signup-form-box">
+          <div className="signup-form-box max-w-md">
             <div className="signup-title">
               <div className="left-1 mb-6">
                 <svg
@@ -134,14 +136,13 @@ const page = () => {
                     <div className="w-full border-t border-[#686677]" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-black text-white">
-                      Or
-                    </span>
+                    <span className="px-2 bg-black text-white">Or</span>
                   </div>
                 </div>
               </div>
               <div className="mt-6">
                 <button
+                  type="button"
                   onClick={handleGoogleLogin}
                   className="cursor-pointer w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
@@ -163,8 +164,17 @@ const page = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Register in with Google
+                  Register with Google
                 </button>
+              </div>
+              <div className="text-[#9794AA] mt-2 text-sm">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="underline text-blue-500 hover:text-blue-600"
+                >
+                  Log in
+                </Link>
               </div>
             </form>
           </div>

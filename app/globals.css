@@ -1,6 +1,6 @@
 @import "tailwindcss";
 html {
-  --defaultLabelColor: #9794aa;
+  --defaultLabelColor: #fff;
   --defaultBtnColor: #4CAF50
 }
 sup{

@@ -1,34 +1,46 @@
 import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/db"
+import bcrypt from 'bcrypt'
 
 export const NEXT_AUTH: any = {
     providers: [
         Credentials({
             name: "credentials",
             credentials: {
-                username: { label: "Email", type: "text" },
+                username: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials: any) {
-                console.log("Credentials received:", credentials);
-                // const email = typeof credentials?.email === "string" ? credentials.email : "";
+                if (!credentials?.username || !credentials?.password) {
+                    return null;
+                }
 
-                const user = await prisma.user.findFirst({
-                    where: {
-                        user_email: credentials?.email
+                try {
+                    const user = await prisma.user.findFirst({
+                        where: { user_email: credentials.username }
+                    });
+
+                    if (!user || !user.user_password) {
+                        return null; // User not found or no password set
                     }
-                });
-                console.log(user,'this is user')
-                if (user) {
+
+                    const match = bcrypt.compare(credentials.password, user.user_password);
+                    if (!match) {
+                        return null; // Invalid password
+                    }
+
+                    // Return user object that will be stored in JWT/session
                     return {
                         id: user.user_id.toString(),
-                        email: user?.user_email,
-                        name: user?.user_name,
-                        image: user?.user_image,
+                        email: user.user_email,
+                        name: user.user_name,
+                        image: user.user_image,
                     };
+                } catch (error) {
+                    console.error('Error during authentication:', error);
+                    return null;
                 }
-                return null;
             },
         }),
         GoogleProvider({
@@ -39,6 +51,7 @@ export const NEXT_AUTH: any = {
     secret: process.env.AUTH_SECRET,
     callbacks: {
         async signIn({ user, account, profile }: any) {
+            console.log(profile,'profile')
             if (account?.provider === 'google') {
                 try {
                     const existingUser = await prisma.user.findUnique({
@@ -54,8 +67,20 @@ export const NEXT_AUTH: any = {
                             }
                         });
                     }
+                    else{
+                        await prisma.user.update({
+                            where:{
+                                user_google_id: profile?.sub
+                            },
+                            data:{
+                                user_name: profile?.name,
+                                user_image: profile?.picture,
+                            }
+                        })
+                    }
+                    return true;
                 } catch (error) {
-                    console.error("Error in logginf through google", error);
+                    console.error("Error in logging through google", error);
                     return false;
                 }
 

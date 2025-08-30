@@ -26,13 +26,13 @@ export const signup = async (formData: FormData): Promise<any> => {
     }
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
     const response = await prisma.user.create({
-        data:{
+        data: {
             user_email: email,
             user_password: hashedPassword,
             user_name: name,
             // user_image: profileImageUrl ?? null
-        } 
-        
+        }
+
     });
     return response;
 }
@@ -42,30 +42,22 @@ export const signin = async (formData: FormData): Promise<any> => {
     const password = formData.get('password') as string;
 
     try {
-        const user = await prisma.user.findFirst({
-            where: { user_email: email },
+        const result = await signIn("credentials", {
+            email,
+            password,
+            redirect: false, // Handle redirect manually for better error handling
         });
-        console.log("reached herererer")
-
-        if (!user) {
+        if (result?.error) {
             return {
+                success: false,
                 message: "Invalid email/password."
-            }
+            };
         }
 
-        const match = await bcrypt.compare(password, user.user_password!);
-        if (!match) {
-            return {
-                message: "Invalid email/password."
-            }
-        }
-        console.log("LOGIN SUCCESSS")
-        // Authentication success
-        await signIn("credentials", {
-            email: email,
-            password: password,
-            redirectTo: "/dashboard",
-        });
+        return {
+            success: true,
+            message: "Login successful"
+        };
     } catch (error) {
         console.error('Error during signin:', error);
     }
