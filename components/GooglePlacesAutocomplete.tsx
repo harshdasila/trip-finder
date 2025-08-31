@@ -7,6 +7,7 @@ import { GooglePlacesAutocompleteProps, PlaceResult } from '@/interfaces/trip.in
 export default function GooglePlacesAutocomplete({
   apiKey,
   setCoordinates,
+  setSelectedLocation,
   placeholder = "Enter a location...",
   className = ""
 }: GooglePlacesAutocompleteProps) {
@@ -110,6 +111,8 @@ export default function GooglePlacesAutocomplete({
       ...place,
       coordinates,
     };
+    setSelectedLocation(selectedPlace?.description);
+    console.log("selected palce",selectedPlace)
     setCoordinates({
       latitude: coordinates?.lat,
       longitude: coordinates?.lng
@@ -192,7 +195,7 @@ export default function GooglePlacesAutocomplete({
             }
           }}
           placeholder={placeholder}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="text-white flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 focus:border-white border-[#ccc]"
         />
         
         {isLoading && (

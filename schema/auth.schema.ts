@@ -23,3 +23,11 @@ export const signupSchema = z.object({
         message: "Passwords do not match.",
         path: ["cnfPassword"],
     });
+
+export const addTripSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().optional(),
+    maxPeople: z.string(),
+    minBudget: z.string(),
+    maxBudget: z.string(),
+})

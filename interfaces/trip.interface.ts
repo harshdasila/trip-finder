@@ -7,6 +7,7 @@ export interface PlaceResult {
 export interface GooglePlacesAutocompleteProps {
   apiKey: string;
   setCoordinates?: any
+  setSelectedLocation: any
   placeholder?: string;
   className?: string;
 }
