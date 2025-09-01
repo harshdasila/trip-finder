@@ -35,6 +35,11 @@ export default function GooglePlacesAutocomplete({
       const response = await axios.get(`/api/places/autocomplete`, {
         params: { input: searchQuery }
       });
+      if(response.data?.message === "API QUOTA MAX"){
+        alert("GOOGLE MAPS API LIMIT EXCEDED! Try again tommorow");
+        return;
+      }
+      console.log(response,'check this')
       const data = await response.data;
       
       if (data.status === 'OK') {
@@ -66,6 +71,10 @@ export default function GooglePlacesAutocomplete({
       const response = await axios.get(`/api/places/details`, {
         params: { place_id: placeId }
       });
+      if(response.data?.message === "API QUOTA MAX"){
+        alert("GOOGLE MAPS API LIMIT EXCEDED! Try again tommorow");
+        return null;
+      }
       
       const data = response.data;
       

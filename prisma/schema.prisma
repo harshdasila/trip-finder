@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../lib/generated/prisma"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -45,14 +45,14 @@ model Trip {
 }
 
 model Request {
-  request_id      String @id @default(uuid())
-  request_user_id Int
-  user            User   @relation(fields: [request_user_id], references: [user_id])
-  trip_id String
-  trip    Trip   @relation(fields: [trip_id], references: [trip_id])
-  status RequestStatus @default(PENDING)
-  request_created_at DateTime @default(now())
-  request_updated_at DateTime @updatedAt
+  request_id         String        @id @default(uuid())
+  request_user_id    Int
+  user               User          @relation(fields: [request_user_id], references: [user_id])
+  trip_id            String
+  trip               Trip          @relation(fields: [trip_id], references: [trip_id])
+  status             RequestStatus @default(PENDING)
+  request_created_at DateTime      @default(now())
+  request_updated_at DateTime      @updatedAt
 
   @@unique([request_user_id, trip_id]) // a user can request to join a trip only once
   @@map("tf_request")
@@ -62,4 +62,16 @@ enum RequestStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+model Constants {
+  constant_id         Int      @id @unique @default(autoincrement())
+  constant_type       String
+  constant_slug       String   @unique
+  constant_value      Int
+  constant_max_limit  Int
+  constant_created_at DateTime @default(now())
+  constant_updated_at DateTime @updatedAt
+
+  @@map("tf_constants")
 }
