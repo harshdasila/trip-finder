@@ -2,49 +2,56 @@
 import ErrorMessage from "@/components/ErrorMessage";
 import GooglePlacesAutocomplete from "@/components/GooglePlacesAutocomplete";
 import Input from "@/components/Input";
-import { addTripFormData } from "@/interfaces/auth.interface";
-import { addTripSchema } from "@/schema/auth.schema";
+import {  } from "@/interfaces/auth.interface";
+import { AddTripType, AllTripCompleteType } from "@/interfaces/trip.interface";
+import { addTripSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const page = () => {
+   const { data: session, status } = useSession();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<addTripFormData>({
+  } = useForm<AddTripType>({
     resolver: zodResolver(addTripSchema),
   });
 
   const MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const [coordinates, setCoordinates] = useState({
-    latitude: "",
-    longitude: "",
+    latitude: "14",
+    longitude: "24",
   });
   const [startCoordinates, setStartCoordinates] = useState({
-    latitude: "",
-    longitude: "",
+    latitude: "421",
+    longitude: "411",
   });
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedStartingLocation, setSelectedStartingLocation] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("delhi");
+  const [selectedStartingLocation, setSelectedStartingLocation] =
+    useState("udaipur");
 
   const onSubmit = async (data: any) => {
-    console.log("reached here", data);
     const formData = new FormData();
     formData.append("title", data?.title);
-    formData.append("maxPeople", data?.maxPeople);
-    formData.append("description", data?.description);
-    formData.append("description", data?.description);
+    formData.append("maxPeople", data.maxBudget);
+    formData.append("description", data.description!);
     formData.append("tripLocation", selectedLocation);
     formData.append("locationLat", coordinates.latitude);
     formData.append("locationLon", coordinates.longitude);
     formData.append("startLocation", selectedStartingLocation);
     formData.append("startLocationLat", startCoordinates.latitude);
     formData.append("startLocationLon", startCoordinates.longitude);
-    console.log(formData, "form");
+    formData.append("minBudget",data.minBudget);
+    formData.append("maxBudget", data.maxBudget);
+    formData.append("ownerId", session?.user?.id!)
+    const plainObj = Object.fromEntries(formData.entries());
+    console.log("Form Data as Object:", plainObj);
+    reset();
   };
   console.log(errors, "errors");
 
@@ -121,7 +128,7 @@ const page = () => {
             <Input
               label="Min Budget"
               placeholder="Enter your min budget"
-              type="number"
+              type="text"
               name="minBudget"
               register={register}
               required={true}
@@ -134,7 +141,7 @@ const page = () => {
             <Input
               label="Max Budget"
               placeholder="Enter your max budget"
-              type="number"
+              type="text"
               name="maxBudget"
               register={register}
               required={true}

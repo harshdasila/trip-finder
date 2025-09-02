@@ -1,13 +1,13 @@
 import { z } from "zod"
 
 export const siginSchema = z.object({
-    email: z.email("Invalid email address").min(1, "Email is required."),
+    email: z.email("Invalid email address.").min(1, "Email is required."),
     password: z.string().min(1, "Password is required.")
 })
 
 export const signupSchema = z.object({
     name: z.string().min(1, "Name is required."),
-    email: z.email("Invalid email address.").min(1, "Email is required"),
+    email: z.email("Invalid email address.").min(1, "Email is required."),
     imageUrl: z.string().optional(),
     password: z
         .string()
@@ -23,11 +23,3 @@ export const signupSchema = z.object({
         message: "Passwords do not match.",
         path: ["cnfPassword"],
     });
-
-export const addTripSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().optional(),
-    maxPeople: z.string(),
-    minBudget: z.string(),
-    maxBudget: z.string(),
-})

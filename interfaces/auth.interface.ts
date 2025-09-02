@@ -1,4 +1,5 @@
-import { addTripSchema, siginSchema, signupSchema } from "@/schema/auth.schema";
+import { addTripSchema } from "@/schema";
+import { siginSchema, signupSchema } from "@/schema/auth.schema";
 import z from "zod";
 
 export type signInFormData = z.infer<typeof siginSchema>
@@ -12,4 +13,3 @@ export interface ErrorMessageProps {
     text: string | null;
 }
 
-export type addTripFormData = z.infer<typeof addTripSchema>

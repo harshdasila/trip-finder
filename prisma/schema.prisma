@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  user_id         Int       @id @default(autoincrement())
+  user_id         String       @id @default(cuid())
   user_google_id  String?   @unique
   user_name       String
   user_email      String    @unique
@@ -25,28 +25,33 @@ model User {
 }
 
 model Trip {
-  trip_id          String    @id @default(cuid())
-  trip_title       String
-  trip_location    String
-  trip_start_date  DateTime
-  trip_end_date    DateTime
-  trip_min_budget  Int
-  trip_max_budget  Int
-  trip_description String?
-  participants     User[]    @relation("trip")
-  trip_max_people  Int
-  trip_owner       User      @relation("trip_owner", fields: [trip_owner_id], references: [user_id])
-  trip_owner_id    Int
-  requests         Request[]
-  trip_created_at  DateTime  @default(now())
-  trip_updated_at  DateTime  @updatedAt
+  trip_id                    String    @id @default(cuid())
+  trip_title                 String
+  trip_location              String
+  trip_location_lat          String
+  trip_location_lon          String
+  trip_starting_location     String
+  trip_starting_location_lat String
+  trip_starting_location_lon String
+  trip_start_date            DateTime
+  trip_end_date              DateTime
+  trip_min_budget            Int
+  trip_max_budget            Int
+  trip_description           String?
+  participants               User[]    @relation("trip")
+  trip_max_people            Int
+  trip_owner                 User      @relation("trip_owner", fields: [trip_owner_id], references: [user_id])
+  trip_owner_id              String
+  requests                   Request[]
+  trip_created_at            DateTime  @default(now())
+  trip_updated_at            DateTime  @updatedAt
 
   @@map("tf_trip")
 }
 
 model Request {
   request_id         String        @id @default(uuid())
-  request_user_id    Int
+  request_user_id    String
   user               User          @relation(fields: [request_user_id], references: [user_id])
   trip_id            String
   trip               Trip          @relation(fields: [trip_id], references: [trip_id])

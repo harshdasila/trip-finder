@@ -8,11 +8,11 @@ import Input from "@/components/Input";
 import { signInFormData } from "@/interfaces/auth.interface";
 import ErrorMessage from "@/components/ErrorMessage";
 import { getProviders, signIn, useSession } from "next-auth/react";
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
 const page = () => {
   const { data: session, status } = useSession();
-  console.log(session,'on frontend session')
+  console.log(session, "on frontend session");
   const {
     register,
     handleSubmit,
@@ -51,39 +51,43 @@ const page = () => {
   }, []);
 
   useEffect(() => {
-        if (session) {
-          console.log(session,'session')
-          return;
-            redirect('/dashboard');
-        }
-    }, [session]);
+    if (session) {
+      console.log(session, "session");
+      return;
+      redirect("/dashboard");
+    }
+  }, [session]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="w-[430px] h-auto bg-white p-6 rounded-lg">
-        <div className="text-center mb-3">
-          <div className="font-sans text-4xl font-bold">Signup</div>
+    <div className="flex justify-center items-center h-screen bg-black">
+      <div className="w-[430px] h-auto p-6 rounded-lg bg-black">
+        <div className="mb-3 bg-black">
+          <div className="text-white text-4xl font-bold">Login</div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Email"
-              placeholder="Enter you registered email."
-              type="text"
-              name="email"
-              register={register}
-            />
-            {errors.email && (
-              <ErrorMessage text={errors.email.message || null} />
-            )}
-            <Input
-              label="Password"
-              placeholder="Enter Your Password."
-              type="password"
-              name="password"
-              register={register}
-            />
-            {errors.password && (
-              <ErrorMessage text={errors.password.message || null} />
-            )}
+            <div className="mb-3">
+              <Input
+                label="Email"
+                placeholder="Enter you registered email."
+                type="text"
+                name="email"
+                register={register}
+              />
+              {errors.email && (
+                <ErrorMessage text={errors.email.message || null} />
+              )}
+            </div>
+            <div className="mb-3">
+              <Input
+                label="Password"
+                placeholder="Enter Your Password."
+                type="password"
+                name="password"
+                register={register}
+              />
+              {errors.password && (
+                <ErrorMessage text={errors.password.message || null} />
+              )}
+            </div>
             <button type="submit">Sign In</button>
           </form>
           <div className="mt-6">

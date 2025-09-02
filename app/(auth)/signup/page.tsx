@@ -74,7 +74,7 @@ const page = () => {
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="input-containers">
-                <div className="mb-2">
+                <div className="mb-3 ">
                   <Input
                     label="Name"
                     placeholder="Enter your full name."
@@ -87,7 +87,7 @@ const page = () => {
                     <ErrorMessage text={errors.name.message || null} />
                   )}
                 </div>
-                <div className="mb-2">
+                <div className="mb-3">
                   <Input
                     label="Email"
                     placeholder="Enter your email address."
@@ -100,7 +100,7 @@ const page = () => {
                     <ErrorMessage text={errors.email.message || null} />
                   )}
                 </div>
-                <div className="mb-2">
+                <div className="mb-3">
                   <Input
                     label="Password"
                     placeholder="Enter your Password"
@@ -113,7 +113,7 @@ const page = () => {
                     <ErrorMessage text={errors.password.message || null} />
                   )}
                 </div>
-                <div className="mb-2">
+                <div className="mb-3">
                   <Input
                     label="Confirm Password"
                     placeholder="Re-enter your Password"
