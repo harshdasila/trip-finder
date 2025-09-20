@@ -47,7 +47,7 @@ export const signin = async (formData: FormData): Promise<any> => {
             password,
             redirect: false, // Handle redirect manually for better error handling
         });
-        if (result?.error) {
+        if (!result) {
             return {
                 success: false,
                 message: "Invalid email/password."

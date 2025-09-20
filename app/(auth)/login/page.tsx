@@ -9,6 +9,8 @@ import { signInFormData } from "@/interfaces/auth.interface";
 import ErrorMessage from "@/components/ErrorMessage";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { getUserLocation } from "@/utils/getLocation";
+import { updateUserLocation } from "@/actions/constant.action";
 
 const page = () => {
   const { data: session, status } = useSession();
@@ -32,6 +34,13 @@ const page = () => {
     formData.append("email", data.email);
     formData.append("password", data.password);
     const result = await signin(formData);
+    if(result.success == true){
+      const location = await getUserLocation();
+      console.log(location,'location')
+      await updateUserLocation(String(location.lat), String(location.lon));
+      localStorage.setItem('userLocation', JSON.stringify(location));
+      window.location.href = '/add-trip'
+    }
     //login to handle navigation
     reset();
   };

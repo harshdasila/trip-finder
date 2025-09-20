@@ -12,7 +12,8 @@ export const NEXT_AUTH: any = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials: any) {
-                if (!credentials?.username || !credentials?.password) {
+                console.log(credentials,'creds')
+                if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
@@ -20,15 +21,17 @@ export const NEXT_AUTH: any = {
                     const user = await prisma.user.findFirst({
                         where: { user_email: credentials.username }
                     });
+                    console.log(user,'this is the user');
 
                     if (!user || !user.user_password) {
                         return null; // User not found or no password set
                     }
 
-                    const match = bcrypt.compare(credentials.password, user.user_password);
+                    const match = await bcrypt.compare(credentials.password, user.user_password);
                     if (!match) {
                         return null; // Invalid password
                     }
+                    console.log("password has matched")
 
                     // Return user object that will be stored in JWT/session
                     return {
@@ -94,6 +97,8 @@ export const NEXT_AUTH: any = {
             if (session.user) {
                 session.user.id = token.sub
             }
+            console.log(token,'token');
+            console.log(session,'session')
             return session
         }
     },

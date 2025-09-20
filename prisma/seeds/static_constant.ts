@@ -13,7 +13,7 @@ export const addConstants = async (prisma: PrismaClient) => {
   await Promise.all(
     constants.map((c) =>
       prisma.constants.upsert({
-        where: { constant_slug: c.type },
+        where: { constant_slug: c.slug },
         update: {
           constant_value: c.value,
           constant_max_limit: c.maxValue,

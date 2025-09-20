@@ -1,4 +1,5 @@
 "use client";
+import { addTrip } from "@/actions/trip.action";
 import ErrorMessage from "@/components/ErrorMessage";
 import GooglePlacesAutocomplete from "@/components/GooglePlacesAutocomplete";
 import Input from "@/components/Input";
@@ -17,7 +18,7 @@ const page = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<AddTripType>({
+  } = useForm({
     resolver: zodResolver(addTripSchema),
   });
 
@@ -48,9 +49,11 @@ const page = () => {
     formData.append("startLocationLon", startCoordinates.longitude);
     formData.append("minBudget",data.minBudget);
     formData.append("maxBudget", data.maxBudget);
-    formData.append("ownerId", session?.user?.id!)
-    const plainObj = Object.fromEntries(formData.entries());
-    console.log("Form Data as Object:", plainObj);
+    formData.append("ownerId", session?.user?.id!);
+    // const plainObj = Object.fromEntries(formData.entries());
+    // console.log("Form Data as Object:", plainObj);
+    const response = await addTrip(formData);
+    console.log(response,'on frontend')
     reset();
   };
   console.log(errors, "errors");
@@ -73,7 +76,7 @@ const page = () => {
             )}
           </div>
           <div className="">
-            <h1 className="mb-4 text-white">Trip Destination</h1>
+            <h1 className="mb-1 text-white">Trip Destination</h1>
             <GooglePlacesAutocomplete
               apiKey={MAPS_API_KEY!}
               setCoordinates={setCoordinates}
@@ -86,7 +89,7 @@ const page = () => {
             )} */}
           </div>
           <div className="">
-            <h1 className="mb-4 text-white">Trip Starting Location</h1>
+            <h1 className="mb-1 text-white">Trip Starting Location</h1>
             <GooglePlacesAutocomplete
               apiKey={MAPS_API_KEY!}
               setCoordinates={setStartCoordinates}

@@ -9,74 +9,87 @@ datasource db {
 }
 
 model User {
-  user_id         String       @id @default(cuid())
-  user_google_id  String?   @unique
-  user_name       String
-  user_email      String    @unique
-  user_image      String?
-  user_password   String?
-  trips           Trip[]    @relation("trip")
-  requests        Request[]
-  owned_trips     Trip[]    @relation("trip_owner")
-  user_created_at DateTime  @default(now())
-  user_updated_at DateTime  @updatedAt
+  user_id           String    @id @default(cuid())
+  user_name         String
+  user_email        String    @unique
+  user_image        String?
+  user_created_at   DateTime  @default(now())
+  user_updated_at   DateTime  @updatedAt
+  user_password     String?
+  user_google_id    String?   @unique
+  user_location_lat String?
+  user_location_lon String?
+  requests          Request[]
+  owned_trips       Trip[]    @relation("trip_owner")
+  trips             Trip[]    @relation("trip")
 
   @@map("tf_user")
 }
 
 model Trip {
-  trip_id                    String    @id @default(cuid())
-  trip_title                 String
-  trip_location              String
-  trip_location_lat          String
-  trip_location_lon          String
-  trip_starting_location     String
-  trip_starting_location_lat String
-  trip_starting_location_lon String
-  trip_start_date            DateTime
-  trip_end_date              DateTime
-  trip_min_budget            Int
-  trip_max_budget            Int
-  trip_description           String?
-  participants               User[]    @relation("trip")
-  trip_max_people            Int
-  trip_owner                 User      @relation("trip_owner", fields: [trip_owner_id], references: [user_id])
-  trip_owner_id              String
-  requests                   Request[]
-  trip_created_at            DateTime  @default(now())
-  trip_updated_at            DateTime  @updatedAt
+  trip_created_at             DateTime                 @default(now())
+  trip_description            String?
+  trip_end_date               DateTime
+  trip_id                     String                   @id @default(cuid())
+  trip_location               String
+  trip_max_budget             Int
+  trip_max_people             Int
+  trip_min_budget             Int
+  trip_owner_id               String
+  trip_start_date             DateTime
+  trip_title                  String
+  trip_updated_at             DateTime                 @updatedAt
+  trip_location_lat           String
+  trip_location_lon           String
+  trip_starting_location      String
+  trip_starting_location_lat  String
+  trip_starting_location_lon  String
+  trip_starting_location_geom Unsupported("geometry")?
+  requests                    Request[]
+  trip_owner                  User                     @relation("trip_owner", fields: [trip_owner_id], references: [user_id])
+  participants                User[]                   @relation("trip")
 
+  @@index([trip_starting_location_geom], map: "idx_tf_trip_starting_location_geom", type: Gist)
   @@map("tf_trip")
 }
 
 model Request {
-  request_id         String        @id @default(uuid())
-  request_user_id    String
-  user               User          @relation(fields: [request_user_id], references: [user_id])
-  trip_id            String
-  trip               Trip          @relation(fields: [trip_id], references: [trip_id])
   status             RequestStatus @default(PENDING)
   request_created_at DateTime      @default(now())
+  request_id         String        @id @default(uuid())
   request_updated_at DateTime      @updatedAt
+  request_user_id    String
+  trip_id            String
+  user               User          @relation(fields: [request_user_id], references: [user_id])
+  trip               Trip          @relation(fields: [trip_id], references: [trip_id])
 
-  @@unique([request_user_id, trip_id]) // a user can request to join a trip only once
+  @@unique([request_user_id, trip_id])
   @@map("tf_request")
+}
+
+model Constants {
+  constant_id         Int      @id @unique @default(autoincrement())
+  constant_type       String
+  constant_value      Int
+  constant_max_limit  Int
+  constant_created_at DateTime @default(now())
+  constant_updated_at DateTime @updatedAt
+  constant_slug       String   @unique
+
+  @@map("tf_constants")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
 }
 
 enum RequestStatus {
   PENDING
   ACCEPTED
   REJECTED
-}
-
-model Constants {
-  constant_id         Int      @id @unique @default(autoincrement())
-  constant_type       String
-  constant_slug       String   @unique
-  constant_value      Int
-  constant_max_limit  Int
-  constant_created_at DateTime @default(now())
-  constant_updated_at DateTime @updatedAt
-
-  @@map("tf_constants")
 }
