@@ -55,6 +55,7 @@ model Trip {
 
 model Request {
   status             RequestStatus @default(PENDING)
+  request_message    String?
   request_created_at DateTime      @default(now())
   request_id         String        @id @default(uuid())
   request_updated_at DateTime      @updatedAt

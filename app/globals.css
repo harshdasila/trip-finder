@@ -16,6 +16,9 @@ sup{
   height: 100vh;
   background-color: black;
 }
+.react-datepicker__input-container{
+  border: 1px solid white;
+}
 
 .signup-image-container {
   flex: 1;
@@ -101,4 +104,60 @@ button[type="submit"]:hover {
   display: flex;
   flex-direction: column;
   /* margin-bottom: 10px; */
+}
+
+/* Calendar container */
+.react-datepicker {
+  background-color: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  color: #000000 !important;
+  padding: 10px !important
+}
+
+/* Header */
+.react-datepicker__header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+/* Days & text */
+.react-datepicker__day,
+.react-datepicker__day-name,
+.react-datepicker__current-month {
+  color: #000000 !important;
+}
+
+/* Selected / range */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range,
+.react-datepicker__day--keyboard-selected {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+/* Hover */
+.react-datepicker__day:hover {
+  background-color: #e3f2fd !important;
+  color: #000000 !important;
+}
+
+/* Input field where dates show */
+.react-datepicker-wrapper,
+.react-datepicker__input-container input {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e0e0e0 !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+}
+
+/* Placeholder text */
+.react-datepicker__input-container input::placeholder {
+  color: #666666 !important;
+}
+.tripcard{
+  width: 416px;
+  height: 400px;
+  max-height: 400px;
 }

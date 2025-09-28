@@ -3,16 +3,22 @@ import { addTrip } from "@/actions/trip.action";
 import ErrorMessage from "@/components/ErrorMessage";
 import GooglePlacesAutocomplete from "@/components/GooglePlacesAutocomplete";
 import Input from "@/components/Input";
-import {  } from "@/interfaces/auth.interface";
+import {} from "@/interfaces/auth.interface";
 import { AddTripType, AllTripCompleteType } from "@/interfaces/trip.interface";
 import { addTripSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "../../globals.css"
 
 const page = () => {
-   const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [startDate, endDate] = dateRange;
+  console.log(startDate, endDate,'dates')
   const {
     register,
     handleSubmit,
@@ -47,13 +53,15 @@ const page = () => {
     formData.append("startLocation", selectedStartingLocation);
     formData.append("startLocationLat", startCoordinates.latitude);
     formData.append("startLocationLon", startCoordinates.longitude);
-    formData.append("minBudget",data.minBudget);
+    formData.append("minBudget", data.minBudget);
     formData.append("maxBudget", data.maxBudget);
     formData.append("ownerId", session?.user?.id!);
+    formData.append("startDate", startDate ? startDate.toISOString() : "");
+    formData.append("endDate", endDate ? endDate.toISOString() : "");
     // const plainObj = Object.fromEntries(formData.entries());
     // console.log("Form Data as Object:", plainObj);
     const response = await addTrip(formData);
-    console.log(response,'on frontend')
+    console.log(response, "on frontend");
     reset();
   };
   console.log(errors, "errors");
@@ -152,6 +160,21 @@ const page = () => {
             {errors.maxBudget && (
               <ErrorMessage text={errors.maxBudget.message || null} />
             )}
+          </div>
+          <div className="mb-2">
+            <span style={{color: "white", fontSize: '14px'}}>Select Start and End Date<sup> *</sup></span><br></br>
+            <DatePicker
+              selectsRange
+              minDate={new Date()}
+              dateFormat="dd/MM/yyyy"
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setDateRange(update as [Date | null, Date | null]);
+              }}
+              isClearable
+              placeholderText="Select travel dates"
+            />
           </div>
         </div>
         <button className="font-medium" type="submit">

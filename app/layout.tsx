@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import Providers from "./providers";
 import { Poppins } from 'next/font/google';
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html className={poppins.variable}>
       <body>
+        <ToastContainer position="top-right"/>
         <Providers>{children}</Providers>
       </body>
     </html>

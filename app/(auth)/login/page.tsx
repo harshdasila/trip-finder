@@ -34,9 +34,13 @@ const page = () => {
     formData.append("email", data.email);
     formData.append("password", data.password);
     const result = await signin(formData);
+    console.log(result,'result in frontend')
+    if(!result){
+      alert("invalid id/password");
+      return;
+    }
     if(result.success == true){
       const location = await getUserLocation();
-      console.log(location,'location')
       await updateUserLocation(String(location.lat), String(location.lon));
       localStorage.setItem('userLocation', JSON.stringify(location));
       window.location.href = '/add-trip'

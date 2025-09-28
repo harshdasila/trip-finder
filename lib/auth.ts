@@ -28,10 +28,11 @@ export const NEXT_AUTH: any = {
                     }
 
                     const match = await bcrypt.compare(credentials.password, user.user_password);
+                    console.log(match," match")
                     if (!match) {
                         return null; // Invalid password
                     }
-                    console.log("password has matched")
+                    
 
                     // Return user object that will be stored in JWT/session
                     return {

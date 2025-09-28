@@ -1,0 +1,170 @@
+"use client";
+import Image from "next/image";
+import React from "react";
+import tripImage from "../public/assets/trip.png";
+import "../app/globals.css";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
+import {
+  cancelRequestTripAction,
+  requestToJoinTripAction,
+} from "@/actions/trip.action";
+import { getSession } from "@/utils/getSession";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+
+const TripCard = ({ trip, getTrips }: any) => {
+  const {
+    trip_id,
+    trip_title,
+    trip_description,
+    trip_starting_location,
+    trip_start_date,
+    trip_end_date,
+    trip_min_budget,
+    trip_max_budget,
+    trip_max_people,
+  } = trip;
+
+  const { data: session, status } = useSession();
+
+  const requestToJoinTrip = async () => {
+    try {
+      if (status === "loading") {
+        console.log("Session loading...");
+        return;
+      }
+      if (!session) {
+        console.log("No session found");
+        return;
+      }
+      const result = await Swal.fire({
+        input: "textarea",
+        inputLabel: "Message",
+        inputPlaceholder: "Type your message here...",
+        inputAttributes: {
+          "aria-label": "Type your message here",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Submit",
+        cancelButtonText: "Cancel",
+        reverseButtons: true, // This puts Cancel on left, Submit on right
+        confirmButtonColor: "#4CAF50", // Optional: green color for submit
+        cancelButtonColor: "#f44336", // Optional: red color for cancel
+      });
+
+      if (result.isConfirmed) {
+        const response = await requestToJoinTripAction(
+          session?.user?.id,
+          trip_id,
+          result?.value
+        );
+        console.log(response, "responseeee");
+        if (response) {
+          toast.success("Request submitted successfully.");
+        }
+        await getTrips();
+      } else if (result.isDismissed) {
+        // Execute your cancel code here
+        console.log("User cancelled the dialog");
+        // Add your cancel logic here
+      }
+    } catch (error) {
+      console.error("Error in joining trip", error);
+    }
+  };
+
+  const cancelTripRequest = async (tripId: any) => {
+    try {
+      const result = await cancelRequestTripAction(session?.user?.id, tripId);
+      console.log(result, "on delete result");
+      if (result) {
+        toast.success("Request deleted successfully.");
+        await getTrips();
+      }
+    } catch (error) {
+      console.error("Error in deleting trip request", error);
+    }
+  };
+
+  // Calculate difference in days
+  const diffMs = trip_end_date.getTime() - trip_start_date.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  return (
+    <div className="group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col">
+      {/* Image Container */}
+      <div className="relative overflow-hidden">
+        <div className="aspect-[4/3] bg-gray-200">
+          <Image
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            src={tripImage}
+            alt={trip_title}
+          />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-1">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1 mr-2">
+            {trip_title}
+          </h3>
+        </div>
+
+        {/* Trip Features */}
+        <div className="space-y-2 mb-4 flex-1">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="w-4 h-4 flex items-center justify-center">👥</span>
+            <span>1 - {trip_max_people} People</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="w-4 h-4 flex items-center justify-center">📍</span>
+            <span>From {trip_starting_location}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="w-4 h-4 flex items-center justify-center">📅</span>
+            <span>
+              {new Date(trip_start_date).toLocaleDateString()} -{" "}
+              {new Date(trip_end_date).toLocaleDateString()}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="w-4 h-4 flex items-center justify-center">💰</span>
+            <span>
+              ₹{trip_min_budget.toLocaleString()} - ₹
+              {trip_max_budget.toLocaleString()}
+            </span>
+          </div>
+
+          <p className="text-sm text-gray-600 mt-2">{trip_description}</p>
+        </div>
+        {trip?.has_requested === false && (
+          <div className="mt-auto pt-3">
+            <button
+              onClick={() => requestToJoinTrip()}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
+            >
+              Request to Join Trip
+            </button>
+          </div>
+        )}
+        {trip?.has_requested === true && (
+          <div className="mt-auto pt-3">
+            <button
+              onClick={() => cancelTripRequest(trip?.trip_id)}
+              className="w-full bg-red-400 hover:bg-red-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
+            >
+              Cancel Trip Request
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default TripCard;
