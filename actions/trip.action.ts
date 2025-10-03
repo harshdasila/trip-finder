@@ -143,8 +143,6 @@ export async function getAllTripsNearby(
       ORDER BY distance_km ASC
       LIMIT $3
     `, userLat, userLon, limit, userId) as NearbyTripResult[]
-
-    console.log(nearbyTrips, 'all trips by distance')
     return nearbyTrips
   } catch (error) {
     console.error('Error fetching trips by distance:', error)
@@ -183,5 +181,54 @@ export async function cancelRequestTripAction(userId: any, tripId: any){
     return response;
   } catch (error) {
     console.error("Error in deleting trip request", error);
+  }
+}
+
+export const getMyTrips = async() => {
+  try {
+    const session = await auth();
+    const response = await prisma?.trip?.findMany({
+      where:{
+        trip_owner_id: session?.user?.id
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getting my trips", error);
+  }
+}
+
+export const ifTripExistAction = async(tripId: string) => {
+  try {
+    const reponse = await prisma?.trip.findUnique({
+      where:{
+        trip_id: tripId
+      }
+    });
+    return reponse ? true : false;
+  } catch (error) {
+    console.error("Error in checking trip ", error);
+  }
+}
+
+export const getTripRequests = async(tripId: string) => {
+  try {
+    const response = await prisma?.request.findMany({
+      where:{
+        trip_id: tripId
+      },
+      include: {
+        user: {
+          select:{
+            user_email: true,
+            user_name: true,
+            user_image: true,
+          }
+        }
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getting trip requests", error);
   }
 }

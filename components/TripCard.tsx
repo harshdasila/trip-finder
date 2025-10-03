@@ -12,8 +12,10 @@ import { getSession } from "@/utils/getSession";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import TripActions from "./TripActions";
+import Link from "next/link";
 
-const TripCard = ({ trip, getTrips }: any) => {
+const TripCard = ({ trip, getTrips, type }: any) => {
   const {
     trip_id,
     trip_title,
@@ -25,17 +27,28 @@ const TripCard = ({ trip, getTrips }: any) => {
     trip_max_budget,
     trip_max_people,
   } = trip;
+  const formattedStartDate = new Date(trip_start_date).toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }
+  );
+  const formattedEndDate = new Date(trip_end_date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   const { data: session, status } = useSession();
 
   const requestToJoinTrip = async () => {
     try {
       if (status === "loading") {
-        console.log("Session loading...");
         return;
       }
       if (!session) {
-        console.log("No session found");
         return;
       }
       const result = await Swal.fire({
@@ -59,14 +72,11 @@ const TripCard = ({ trip, getTrips }: any) => {
           trip_id,
           result?.value
         );
-        console.log(response, "responseeee");
         if (response) {
           toast.success("Request submitted successfully.");
         }
         await getTrips();
       } else if (result.isDismissed) {
-        // Execute your cancel code here
-        console.log("User cancelled the dialog");
         // Add your cancel logic here
       }
     } catch (error) {
@@ -77,7 +87,6 @@ const TripCard = ({ trip, getTrips }: any) => {
   const cancelTripRequest = async (tripId: any) => {
     try {
       const result = await cancelRequestTripAction(session?.user?.id, tripId);
-      console.log(result, "on delete result");
       if (result) {
         toast.success("Request deleted successfully.");
         await getTrips();
@@ -127,8 +136,8 @@ const TripCard = ({ trip, getTrips }: any) => {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="w-4 h-4 flex items-center justify-center">📅</span>
             <span>
-              {new Date(trip_start_date).toLocaleDateString()} -{" "}
-              {new Date(trip_end_date).toLocaleDateString()}
+              {formattedStartDate} - {" "}
+              {formattedEndDate}
             </span>
           </div>
 
@@ -142,24 +151,17 @@ const TripCard = ({ trip, getTrips }: any) => {
 
           <p className="text-sm text-gray-600 mt-2">{trip_description}</p>
         </div>
-        {trip?.has_requested === false && (
-          <div className="mt-auto pt-3">
-            <button
-              onClick={() => requestToJoinTrip()}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
-            >
-              Request to Join Trip
-            </button>
-          </div>
+        {type === "generalHomePage" && (
+          <TripActions
+            cancelTripRequest={cancelTripRequest}
+            hasRequested={trip?.has_requested}
+            requestToJoinTrip={requestToJoinTrip}
+            tripId={trip?.trip_id}
+          />
         )}
-        {trip?.has_requested === true && (
-          <div className="mt-auto pt-3">
-            <button
-              onClick={() => cancelTripRequest(trip?.trip_id)}
-              className="w-full bg-red-400 hover:bg-red-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
-            >
-              Cancel Trip Request
-            </button>
+        {type === "myTrips" && (
+          <div>
+            <Link href={`/${trip_id}/requests`}>Go to Request Page</Link>
           </div>
         )}
       </div>
