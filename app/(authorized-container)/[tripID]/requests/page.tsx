@@ -1,7 +1,10 @@
-import { getTripRequests, ifTripExistAction } from "@/actions/trip.action";
+import { ifTripExistAction } from "@/actions/trip.action";
 import TripRequest from "@/components/TripRequest";
 import { notFound } from "next/navigation";
 import { Users, Clock, Inbox } from "lucide-react";
+import { getTripRequests } from "@/actions/request.action";
+import TripRequestsStats from "@/components/TripRequestsStats";
+import Header from "@/components/Header";
 
 const Page = async ({ params }: { params: Promise<{ tripID: string }> }) => {
   const { tripID } = await params;
@@ -16,9 +19,11 @@ const Page = async ({ params }: { params: Promise<{ tripID: string }> }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <Header title="Trip Requests" subtitle="Manage requests from travelers" showBackButton />
       <div className="max-w-6xl mx-auto px-2 py-5 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="mb-8">
+        
+        {/* <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-blue-600 p-2 rounded-lg">
               <Users className="w-6 h-6 text-white" />
@@ -28,39 +33,10 @@ const Page = async ({ params }: { params: Promise<{ tripID: string }> }) => {
           <p className="text-gray-600 ml-14">
             Manage and review requests from travelers interested in joining your trip
           </p>
-        </div>
+        </div> */}
 
         {/* Stats Bar */}
-        {tripRequests && tripRequests.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">
-                    {tripRequests.filter(r => r.status === 'PENDING').length} Pending
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">
-                    {tripRequests.filter(r => r.status === 'ACCEPTED').length} Accepted
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">
-                    {tripRequests.filter(r => r.status === 'REJECTED').length} Rejected
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-gray-500">
-                <Clock className="w-4 h-4" />
-                <span className="text-sm">Total: {tripRequests.length} requests</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <TripRequestsStats initialRequests={tripRequests || []} />
 
         {/* Requests List or Empty State */}
         {tripRequests && tripRequests.length > 0 ? (

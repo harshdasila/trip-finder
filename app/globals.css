@@ -142,15 +142,18 @@ button[type="submit"]:hover {
 }
 
 /* Input field where dates show */
-.react-datepicker-wrapper,
-.react-datepicker__input-container input {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 1px solid #e0e0e0 !important;
-  padding: 6px 10px !important;
-  border-radius: 6px !important;
-  font-size: 14px !important;
+.react-datepicker-wrapper {
+  width: 100% !important;
 }
+.react-datepicker__input-container input {
+  height: 80% !important;
+  width: 100% !important;
+  padding: 6px 12px 6px 40px !important;
+  background-color: #111827 !important; /* Dark gray matching bg-gray-900 */
+  color: #ffffff !important;
+  border: 1px solid #374151 !important; /* Gray border matching border-gray-700 */
+}
+
 
 /* Placeholder text */
 .react-datepicker__input-container input::placeholder {

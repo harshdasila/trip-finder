@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../lib/generated/prisma"
   previewFeatures = ["relationJoins"]
 }
 
@@ -10,84 +10,113 @@ datasource db {
 }
 
 model User {
-  user_id           String    @id @default(cuid())
-  user_name         String
-  user_email        String    @unique
-  user_image        String?
-  user_created_at   DateTime  @default(now())
-  user_updated_at   DateTime  @updatedAt
-  user_password     String?
-  user_google_id    String?   @unique
-  user_location_lat String?
-  user_location_lon String?
-  requests          Request[]
-  owned_trips       Trip[]    @relation("trip_owner")
-  trips             Trip[]    @relation("trip")
+  user_id              String                 @id @default(dbgenerated("(gen_random_uuid())::text"))
+  user_name            String
+  user_email           String                 @unique
+  user_image           String?
+  user_created_at      DateTime               @default(now()) @db.Timestamptz(6)
+  user_updated_at      DateTime               @default(now()) @updatedAt @db.Timestamptz(6)
+  user_password        String?
+  user_google_id       String?                @unique
+  user_location_lat    String?
+  user_location_lon    String?
+  Message              Message[]              @relation("user_messages")
+  requests             Request[]
+  owned_trips          Trip[]                 @relation("trip_owner")
+  tf_trip_participants tf_trip_participants[]
 
   @@map("tf_user")
 }
 
 model Trip {
-  trip_created_at             DateTime                 @default(now())
-  trip_description            String?
-  trip_end_date               DateTime
-  trip_id                     String                   @id @default(cuid())
-  trip_location               String
-  trip_max_budget             Int
-  trip_max_people             Int
-  trip_min_budget             Int
-  trip_owner_id               String
-  trip_start_date             DateTime
+  trip_id                     String                   @id @default(dbgenerated("(gen_random_uuid())::text"))
   trip_title                  String
-  trip_updated_at             DateTime                 @updatedAt
+  trip_description            String?
+  trip_location               String
   trip_location_lat           String
   trip_location_lon           String
   trip_starting_location      String
   trip_starting_location_lat  String
   trip_starting_location_lon  String
   trip_starting_location_geom Unsupported("geometry")?
+  trip_start_date             DateTime                 @db.Timestamptz(6)
+  trip_end_date               DateTime                 @db.Timestamptz(6)
+  trip_min_budget             Int
+  trip_max_budget             Int
+  trip_max_people             Int
+  trip_owner_id               String
+  trip_created_at             DateTime                 @default(now()) @db.Timestamptz(6)
+  trip_updated_at             DateTime                 @default(now()) @updatedAt @db.Timestamptz(6)
+  ChatRoom                    ChatRoom?
   requests                    Request[]
-  trip_owner                  User                     @relation("trip_owner", fields: [trip_owner_id], references: [user_id])
-  participants                User[]                   @relation("trip")
+  trip_owner                  User                     @relation("trip_owner", fields: [trip_owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  tf_trip_participants        tf_trip_participants[]
 
   @@index([trip_starting_location_geom], map: "idx_tf_trip_starting_location_geom", type: Gist)
   @@map("tf_trip")
 }
 
 model Request {
-  status             RequestStatus @default(PENDING)
-  request_message    String?
-  request_created_at DateTime      @default(now())
-  request_id         String        @id @default(uuid())
-  request_updated_at DateTime      @updatedAt
+  request_id         String        @id @default(dbgenerated("(gen_random_uuid())::text"))
   request_user_id    String
   trip_id            String
-  user               User          @relation(fields: [request_user_id], references: [user_id])
-  trip               Trip          @relation(fields: [trip_id], references: [trip_id])
+  status             RequestStatus @default(PENDING)
+  request_message    String?
+  request_created_at DateTime      @default(now()) @db.Timestamptz(6)
+  request_updated_at DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
+  user               User          @relation(fields: [request_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  trip               Trip          @relation(fields: [trip_id], references: [trip_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([request_user_id, trip_id])
   @@map("tf_request")
 }
 
 model Constants {
-  constant_id         Int      @id @unique @default(autoincrement())
+  constant_id         Int      @id @default(autoincrement())
   constant_type       String
   constant_value      Int
   constant_max_limit  Int
-  constant_created_at DateTime @default(now())
-  constant_updated_at DateTime @updatedAt
   constant_slug       String   @unique
+  constant_created_at DateTime @default(now()) @db.Timestamptz(6)
+  constant_updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   @@map("tf_constants")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model spatial_ref_sys {
-  srid      Int     @id
-  auth_name String? @db.VarChar(256)
-  auth_srid Int?
-  srtext    String? @db.VarChar(2048)
-  proj4text String? @db.VarChar(2048)
+model ChatRoom {
+  id         String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  trip_id    String    @unique
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  trip       Trip      @relation(fields: [trip_id], references: [trip_id], onDelete: NoAction, onUpdate: NoAction)
+  messages   Message[]
+
+  @@map("chat_rooms")
+}
+
+/// 🔹 Message: messages stored per chat room
+model Message {
+  id           String   @id @default(dbgenerated("(gen_random_uuid())::text"))
+  room_id      String
+  sender_id    String
+  sender_name  String
+  sender_image String?
+  content      String
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  room         ChatRoom @relation(fields: [room_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sender       User     @relation("user_messages", fields: [sender_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("messages")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tf_trip_participants {
+  trip_id String
+  user_id String
+  tf_trip Trip   @relation(fields: [trip_id], references: [trip_id], onDelete: Cascade, onUpdate: NoAction)
+  tf_user User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([trip_id, user_id])
 }
 
 enum RequestStatus {

@@ -26,6 +26,7 @@ const TripCard = ({ trip, getTrips, type }: any) => {
     trip_min_budget,
     trip_max_budget,
     trip_max_people,
+    chat_room_id
   } = trip;
   const formattedStartDate = new Date(trip_start_date).toLocaleDateString(
     "en-GB",
@@ -136,8 +137,7 @@ const TripCard = ({ trip, getTrips, type }: any) => {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="w-4 h-4 flex items-center justify-center">📅</span>
             <span>
-              {formattedStartDate} - {" "}
-              {formattedEndDate}
+              {formattedStartDate} - {formattedEndDate}
             </span>
           </div>
 
@@ -160,10 +160,27 @@ const TripCard = ({ trip, getTrips, type }: any) => {
           />
         )}
         {type === "myTrips" && (
-          <div>
-            <Link href={`/${trip_id}/requests`}>Go to Request Page</Link>
+          <div className="mt-4">
+            <Link
+              href={`/${trip_id}/requests`}
+              className="block w-full text-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+            >
+              View Requests
+            </Link>
           </div>
         )}
+        {
+          type === "acceptedTrips" && (
+            <div className="mt-4">
+              <Link
+              href={`/chat/${chat_room_id}`}
+              className="block w-full text-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+            >
+              Chat
+            </Link>
+            </div>
+          )
+        }
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ export const NEXT_AUTH: any = {
 
                 try {
                     const user = await prisma.user.findFirst({
-                        where: { user_email: credentials.username }
+                        where: { user_email: credentials.email }
                     });
                     console.log(user,'this is the user');
 

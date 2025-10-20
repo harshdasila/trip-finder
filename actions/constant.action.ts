@@ -15,14 +15,24 @@ export const getGoogleMapsApiCalls = async () => {
   return response;
 }
 export const incrementGoogleMapsApiCalls = async () => {
+  // First, get the current value
+  const current = await prisma.constants.findUnique({
+    where: {
+      constant_slug: "google_maps",
+    },
+  });
+
+  if (!current) {
+    throw new Error("Google Maps constant not found");
+  }
+
+  // Then update with the new value
   const response = await prisma.constants.update({
     where: {
       constant_slug: "google_maps",
     },
     data: {
-      constant_value: {
-        increment: 1,
-      },
+      constant_value: current.constant_value + 1,
     },
   });
 
@@ -30,7 +40,6 @@ export const incrementGoogleMapsApiCalls = async () => {
 };
 
 export const updateUserLocation = async (lat: string, lon: string): Promise<any> => {
-  console.log("reached update location", lat, lon)
   try {
     const session = await auth();
     if (lat && lon) {

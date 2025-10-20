@@ -39,7 +39,6 @@ export default function GooglePlacesAutocomplete({
         alert("GOOGLE MAPS API LIMIT EXCEDED! Try again tommorow");
         return;
       }
-      console.log(response,'check this')
       const data = await response.data;
       
       if (data.status === 'OK') {
@@ -121,7 +120,6 @@ export default function GooglePlacesAutocomplete({
       coordinates,
     };
     setSelectedLocation(selectedPlace?.description);
-    console.log("selected palce",selectedPlace)
     setCoordinates({
       latitude: coordinates?.lat,
       longitude: coordinates?.lng
