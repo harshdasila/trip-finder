@@ -20,6 +20,7 @@ model User {
   user_google_id       String?                @unique
   user_location_lat    String?
   user_location_lon    String?
+  gender               String                 @default("Other") @db.VarChar(50)
   Message              Message[]              @relation("user_messages")
   requests             Request[]
   owned_trips          Trip[]                 @relation("trip_owner")
@@ -47,6 +48,7 @@ model Trip {
   trip_owner_id               String
   trip_created_at             DateTime                 @default(now()) @db.Timestamptz(6)
   trip_updated_at             DateTime                 @default(now()) @updatedAt @db.Timestamptz(6)
+  gendertrip                  String?                  @default("mixed") @db.VarChar(50)
   ChatRoom                    ChatRoom?
   requests                    Request[]
   trip_owner                  User                     @relation("trip_owner", fields: [trip_owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)

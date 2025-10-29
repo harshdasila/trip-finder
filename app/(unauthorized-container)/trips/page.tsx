@@ -1,5 +1,5 @@
 "use client";
-import { getAllTripsNearby } from "@/actions/trip.action";
+import { commonSearchAction, getAllTripsNearby } from "@/actions/trip.action";
 import TripCard from "@/components/TripCard";
 import { getSession, useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -10,8 +10,12 @@ import {
   Sparkles,
   TrendingUp,
   Calendar,
+  Plus,
 } from "lucide-react";
 import Header from "@/components/Header";
+import { Search, X } from "lucide-react";
+import { SearchBar } from "@/components/SearchBar";
+import { redirect } from "next/navigation";
 
 const Page = () => {
   const { data: session } = useSession();
@@ -22,6 +26,7 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState<"discover" | "accepted">(
     "discover"
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getTrips = async () => {
     try {
@@ -33,6 +38,7 @@ const Page = () => {
         location.lon,
         session?.user?.id
       );
+      console.log(trip);
       const tripsNotAccepted = trip?.filter(
         (trip) => trip?.request_status !== "ACCEPTED"
       );
@@ -42,9 +48,7 @@ const Page = () => {
           trip?.request_status === "ACCEPTED"
       );
       setTrips(tripsNotAccepted || []);
-      const otherUsersTrips = trip.filter(
-        (trip: any) => trip.trip_owner_id !== session?.user?.id
-      );
+      let otherUsersTrips = filterTripsToShow(trip, session);
       setTripsToShow(otherUsersTrips);
       setAcceptedTrips(tripsAccepted || []);
     } catch (error) {
@@ -52,6 +56,22 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterTripsToShow = (t: any, session: any) => {
+    if (!session?.user?.id) return [];
+    return t.filter(
+      (trip: any) =>
+        trip.trip_owner_id !== session.user.id &&
+        trip.request_status !== "ACCEPTED"
+    );
+  };
+
+  const handleSearch = async () => {
+    const query = searchQuery.trim();
+    const response = await commonSearchAction(query, session?.user?.id || "");
+    const filteredTrips = filterTripsToShow(response, session);
+    setTripsToShow(filteredTrips);
   };
 
   useEffect(() => {
@@ -88,7 +108,7 @@ const Page = () => {
       {/* Stats Bar */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
@@ -109,44 +129,63 @@ const Page = () => {
                 </div>
               </div>
             </div>
+
+            {/* Search Bar */}
+            {activeTab === "discover" && (
+              <SearchBar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                handleSearch={handleSearch}
+              />
+            )}
           </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
       <div className="max-w-7xl mx-auto px-6 pt-8">
-        <div className="flex items-center gap-4 border-b border-gray-200 mb-8">
+        <div className="flex items-center justify-between border-b border-gray-200 mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setActiveTab("discover")}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
+                activeTab === "discover"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              Discover Trips
+              {tripsToShow.length > 0 && (
+                <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded-full">
+                  {tripsToShow.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("accepted")}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
+                activeTab === "accepted"
+                  ? "text-green-600 border-b-2 border-green-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <CheckCircle className="w-4 h-4" />
+              My Trips
+              {acceptedTrips.length > 0 && (
+                <span className="bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full">
+                  {acceptedTrips.length}
+                </span>
+              )}
+            </button>
+          </div>
           <button
-            onClick={() => setActiveTab("discover")}
-            className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
-              activeTab === "discover"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            onClick={() => redirect('/add-trip')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
           >
-            <Sparkles className="w-4 h-4" />
-            Discover Trips
-            {tripsToShow.length > 0 && (
-              <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded-full">
-                {tripsToShow.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("accepted")}
-            className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
-              activeTab === "accepted"
-                ? "text-green-600 border-b-2 border-green-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            <CheckCircle className="w-4 h-4" />
-            My Trips
-            {acceptedTrips.length > 0 && (
-              <span className="bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full">
-                {acceptedTrips.length}
-              </span>
-            )}
+            
+            Create Trip
+            <Plus className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -164,15 +203,14 @@ const Page = () => {
                   </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {tripsToShow
-                    .map((trip: any) => (
-                      <TripCard
-                        key={trip.trip_id}
-                        trip={trip}
-                        getTrips={getTrips}
-                        type="generalHomePage"
-                      />
-                    ))}
+                  {tripsToShow.map((trip: any) => (
+                    <TripCard
+                      key={trip.trip_id}
+                      trip={trip}
+                      getTrips={getTrips}
+                      type="generalHomePage"
+                    />
+                  ))}
                 </div>
               </>
             ) : (

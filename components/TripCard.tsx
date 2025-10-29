@@ -26,7 +26,8 @@ const TripCard = ({ trip, getTrips, type }: any) => {
     trip_min_budget,
     trip_max_budget,
     trip_max_people,
-    chat_room_id
+    chat_room_id,
+    gendertrip
   } = trip;
   const formattedStartDate = new Date(trip_start_date).toLocaleDateString(
     "en-GB",
@@ -155,8 +156,10 @@ const TripCard = ({ trip, getTrips, type }: any) => {
           <TripActions
             cancelTripRequest={cancelTripRequest}
             hasRequested={trip?.has_requested}
+            requestStatus = {trip?.request_status}
             requestToJoinTrip={requestToJoinTrip}
             tripId={trip?.trip_id}
+            genderSpecific={gendertrip}
           />
         )}
         {type === "myTrips" && (

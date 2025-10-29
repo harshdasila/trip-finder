@@ -29,6 +29,7 @@ const page = () => {
   };
 
   const onSubmit = async (data: signUpFormData) => {
+    console.log(data,'data')
     const schemaParse = signupSchema.safeParse(data);
     if (!schemaParse.success) {
       return;
@@ -37,6 +38,7 @@ const page = () => {
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("name", data.name);
+    formData.append("gender", data.gender);
     const result = await signup(formData);
     reset();
     console.log(result);
@@ -98,6 +100,23 @@ const page = () => {
                   />
                   {errors.email && (
                     <ErrorMessage text={errors.email.message || null} />
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Gender
+                  </label>
+                  <select
+                    {...register("gender")}
+                    className="w-full px-3 py-2 bg-black text-sm text-[#fff] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#4CAF50] focus:border-[#4CAF50]"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <br></br>
+                  {errors.gender && (
+                    <ErrorMessage text={errors.gender.message || null} />
                   )}
                 </div>
                 <div className="mb-3">

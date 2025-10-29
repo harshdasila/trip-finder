@@ -79,6 +79,7 @@ const Page = () => {
         return;
       }
       const formData = new FormData();
+      console.log(formData, "formdata");
       formData.append("title", data?.title);
       formData.append("maxPeople", data.maxPeople);
       formData.append("description", data.description!);
@@ -93,11 +94,10 @@ const Page = () => {
       formData.append("ownerId", session?.user?.id!);
       formData.append("startDate", startDate ? startDate.toISOString() : "");
       formData.append("endDate", endDate ? endDate.toISOString() : "");
+      formData.append("genderSpecific", data?.genderTrip)
 
       const response = await addTrip(formData);
-      console.log(response,'response')
       if (response) {
-        console.log("ONSIDE RES")
         setSubmitSuccess(true);
         reset();
         setDateRange([null, null]);
@@ -109,7 +109,7 @@ const Page = () => {
         });
         toast.success("Trip created successfully.");
         setTimeout(() => setSubmitSuccess(false), 3000);
-        router.push('/my-trips');
+        router.push("/my-trips");
       }
     } catch (error) {
       console.error("Error creating trip:", error);
@@ -194,6 +194,43 @@ const Page = () => {
                 />
                 {errors.description && (
                   <ErrorMessage text={errors.description.message || null} />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Gender Specific Trip
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="male"
+                      {...register("genderTrip")}
+                      className="w-4 h-4 text-[#4CAF50] cursor-pointer"
+                    />
+                    <span className="ml-2 text-white">Boys Only</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="female"
+                      {...register("genderTrip")}
+                      className="w-4 h-4 text-[#4CAF50] cursor-pointer"
+                    />
+                    <span className="ml-2 text-white">Girls Only</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="mixed"
+                      {...register("genderTrip")}
+                      className="w-4 h-4 text-[#4CAF50] cursor-pointer"
+                    />
+                    <span className="ml-2 text-white">Mixed</span>
+                  </label>
+                </div>
+                {errors.genderTrip && (
+                  <ErrorMessage text={errors.genderTrip.message || null} />
                 )}
               </div>
             </div>

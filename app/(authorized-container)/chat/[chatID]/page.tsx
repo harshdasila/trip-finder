@@ -12,15 +12,11 @@ interface PageProps {
 }
 
 export default async function ChatPage({ params }: PageProps) {
-  // Use await in Server Components (not React.use)
   const { chatID } = await params;
-  
   const session = await auth();
-  
   if (!session?.user) {
     redirect("/login");
   }
-
   // Get user from database using email from session
   const user = await prisma?.user.findUnique({
     where: {
@@ -37,9 +33,6 @@ export default async function ChatPage({ params }: PageProps) {
   if (!user) {
     redirect("/login");
   }
-
-  // Optional: Verify that the chat room exists and user has access to it
-  console.log(chatID, 'chatID');
   
   const chatRoom = await prisma?.chatRoom.findUnique({
   where: {
@@ -48,7 +41,7 @@ export default async function ChatPage({ params }: PageProps) {
   include: {
     trip: {
       include: {
-        tf_trip_participants: {  // ← Changed to the actual relation name
+        tf_trip_participants: {
           where: {
             user_id: user.user_id,
           },
@@ -58,8 +51,6 @@ export default async function ChatPage({ params }: PageProps) {
     },
   },
 });
-  
-  console.log(chatRoom, 'chatRoom');
   
   if (!chatRoom) {
     redirect("/"); // or show error page

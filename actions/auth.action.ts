@@ -17,6 +17,7 @@ export const signup = async (formData: FormData): Promise<any> => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
+    const gender = formData.get('gender') as string;
     // const profileImageUrl = formData?.get('profileImageUrl') as string;
     const isUserExist = await ifUserExists(email);
     if (isUserExist) {
@@ -30,6 +31,7 @@ export const signup = async (formData: FormData): Promise<any> => {
             user_email: email,
             user_password: hashedPassword,
             user_name: name,
+            gender: gender
             // user_image: profileImageUrl ?? null
         }
 
@@ -62,3 +64,16 @@ export const signin = async (formData: FormData): Promise<any> => {
         console.error('Error during signin:', error);
     }
 };
+
+export const getUserDetails = async(id: any) => {
+    try {
+        const user = await prisma?.user?.findFirst({
+            where:{
+                user_id: id
+            }
+        });
+        return user;
+    } catch (error) {
+        console.error("Error in getting user details");
+    }
+}

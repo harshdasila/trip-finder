@@ -8,4 +8,5 @@ export const addTripSchema = z.object({
         .positive("Must be a positive number"),
     minBudget: z.string(),
     maxBudget: z.string(),
+    genderTrip: z.string().min(1, "Please select a option")
 })

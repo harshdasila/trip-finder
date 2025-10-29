@@ -14,7 +14,6 @@ import { updateUserLocation } from "@/actions/constant.action";
 
 const page = () => {
   const { data: session, status } = useSession();
-  console.log(session, "on frontend session");
   const {
     register,
     handleSubmit,
@@ -43,7 +42,7 @@ const page = () => {
       const location = await getUserLocation();
       await updateUserLocation(String(location.lat), String(location.lon));
       localStorage.setItem('userLocation', JSON.stringify(location));
-      window.location.href = '/add-trip'
+      window.location.href = '/trips'
     }
     //login to handle navigation
     reset();
@@ -51,7 +50,7 @@ const page = () => {
 
   const handleGoogleLogin = () => {
     signIn("google", {
-      callbackUrl: "/dashboard",
+      callbackUrl: "/trips",
     });
   };
 
@@ -64,10 +63,8 @@ const page = () => {
   }, []);
 
   useEffect(() => {
-    if (session) {
-      console.log(session, "session");
-      return;
-      redirect("/dashboard");
+    if (session?.user?.id) {
+      redirect("/trips");
     }
   }, [session]);
 

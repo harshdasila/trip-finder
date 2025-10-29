@@ -18,6 +18,7 @@ export const signupSchema = z.object({
             "Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 special character."
         ),
     cnfPassword: z.string().min(1, "Please confirm your Password."),
+    gender: z.string().min(1,"Gender is required.")
 })
     .refine((data: any) => data.password === data.cnfPassword, {
         message: "Passwords do not match.",

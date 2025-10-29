@@ -23,6 +23,7 @@ export const addTrip = async (formData: FormData): Promise<any> => {
   const maxBudget = Number(formData.get('maxBudget') as string);
   const startDate = toLocalDate(formData.get("startDate") as string);
   const endDate = toLocalDate(formData.get("endDate") as string);
+  const genderSpecific = formData.get("genderSpecific") as string;
 
   try {
     if (!session?.user?.id) {
@@ -45,7 +46,8 @@ export const addTrip = async (formData: FormData): Promise<any> => {
         trip_max_budget: maxBudget,
         trip_start_date: startDate,
         trip_end_date: endDate,
-        trip_owner_id: session?.user?.id
+        trip_owner_id: session?.user?.id,
+        gendertrip: genderSpecific
       },
       select: {
         trip_id: true,
@@ -154,6 +156,7 @@ export async function getAllTripsNearby(
     t."trip_max_budget",
     t."trip_max_people",
     t."trip_owner_id",
+    t."gendertrip",
     c."id" as chat_room_id,
     ST_Distance(
       t."trip_starting_location_geom"::geography,
@@ -181,6 +184,27 @@ export async function getAllTripsNearby(
 
 export async function requestToJoinTripAction(userId: any, tripId: any, text: any) {
   try {
+    const ifRequestAlreadyExists = await prisma?.request?.findFirst({
+      where:{
+        trip_id: tripId,
+        request_user_id: userId
+      }
+    });
+    if(ifRequestAlreadyExists){
+      const response = await prisma?.request?.update({
+        where: {
+          request_user_id_trip_id: {
+            trip_id: tripId,
+            request_user_id: userId
+          }
+        },
+        data:{
+          status: "PENDING",
+          request_message: text,
+        }
+      });
+      return response;
+    }
     const reponse = await prisma?.request?.create({
       data: {
         trip_id: tripId,
@@ -239,3 +263,66 @@ export const ifTripExistAction = async (tripId: string) => {
     console.error("Error in checking trip ", error);
   }
 }
+
+export const commonSearchAction = async (searchQuery: string, userId: string) => {
+  const trips = await prisma?.trip.findMany({
+    where: {
+      OR: [
+        {
+          trip_title: {
+            contains: searchQuery,
+            mode: 'insensitive',
+          },
+        },
+        {
+          trip_starting_location: {
+            contains: searchQuery,
+            mode: 'insensitive',
+          },
+        },
+        {
+          trip_description: {
+            contains: searchQuery,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    },
+    include: {
+      ChatRoom: {
+        select: {
+          id: true,
+        },
+      },
+      requests: {
+        where: {
+          request_user_id: userId,
+        },
+        select: {
+          status: true,
+        },
+      },
+    },
+    take: 20,
+  });
+
+  const formattedTrips = trips?.map((trip: any) => ({
+    trip_id: trip.trip_id,
+    trip_title: trip.trip_title,
+    trip_description: trip.trip_description,
+    trip_starting_location: trip.trip_starting_location,
+    trip_starting_location_lat: trip.trip_starting_location_lat,
+    trip_starting_location_lon: trip.trip_starting_location_lon,
+    trip_start_date: trip.trip_start_date,
+    trip_end_date: trip.trip_end_date,
+    trip_min_budget: trip.trip_min_budget,
+    trip_max_budget: trip.trip_max_budget,
+    trip_max_people: trip.trip_max_people,
+    trip_owner_id: trip.trip_owner_id,
+    chat_room_id: trip.chat_room?.id || null,
+    has_requested: trip.requests.length > 0,
+    request_status: trip.requests[0]?.status || null,
+  }));
+
+  return formattedTrips;
+};

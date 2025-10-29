@@ -2,6 +2,7 @@ import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/db"
 import bcrypt from 'bcrypt'
+import { getUserDetails } from "@/actions/auth.action";
 
 export const NEXT_AUTH: any = {
     providers: [
@@ -92,14 +93,17 @@ export const NEXT_AUTH: any = {
             return true;
         },
         jwt: async ({ user, token }: any) => {
+            if(token){
+                const user: any = await getUserDetails(token?.sub);
+                token.gender = user?.gender;
+            }
             return token;
         },
         session: ({ session, token, user }: any) => {
             if (session.user) {
                 session.user.id = token.sub
+                session.user.gender = token.gender
             }
-            console.log(token,'token');
-            console.log(session,'session')
             return session
         }
     },
