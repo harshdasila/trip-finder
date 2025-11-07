@@ -79,7 +79,6 @@ const Page = () => {
         return;
       }
       const formData = new FormData();
-      console.log(formData, "formdata");
       formData.append("title", data?.title);
       formData.append("maxPeople", data.maxPeople);
       formData.append("description", data.description!);

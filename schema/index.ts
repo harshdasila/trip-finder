@@ -9,4 +9,17 @@ export const addTripSchema = z.object({
     minBudget: z.string(),
     maxBudget: z.string(),
     genderTrip: z.string().min(1, "Please select a option")
-})
+}).refine((data) => {
+    const minBudget = parseFloat(data.minBudget);
+    const maxBudget = parseFloat(data.maxBudget);
+    
+    // Check if both are valid numbers
+    if (isNaN(minBudget) || isNaN(maxBudget)) {
+        return true; // Let individual field validation handle this
+    }
+    
+    return minBudget <= maxBudget;
+}, {
+    message: "Minimum budget cannot be greater than maximum budget",
+    path: ["minBudget"], // This will show the error on the minBudget field
+});

@@ -157,6 +157,7 @@ export async function getAllTripsNearby(
     t."trip_max_people",
     t."trip_owner_id",
     t."gendertrip",
+    t."trip_location",
     c."id" as chat_room_id,
     ST_Distance(
       t."trip_starting_location_geom"::geography,
@@ -294,6 +295,7 @@ export const commonSearchAction = async (searchQuery: string, userId: string) =>
           id: true,
         },
       },
+
       requests: {
         where: {
           request_user_id: userId,
@@ -305,6 +307,7 @@ export const commonSearchAction = async (searchQuery: string, userId: string) =>
     },
     take: 20,
   });
+  console.log(trips,'after serach')
 
   const formattedTrips = trips?.map((trip: any) => ({
     trip_id: trip.trip_id,
@@ -319,9 +322,10 @@ export const commonSearchAction = async (searchQuery: string, userId: string) =>
     trip_max_budget: trip.trip_max_budget,
     trip_max_people: trip.trip_max_people,
     trip_owner_id: trip.trip_owner_id,
-    chat_room_id: trip.chat_room?.id || null,
+    chat_room_id: trip.ChatRoom?.id || null,
     has_requested: trip.requests.length > 0,
     request_status: trip.requests[0]?.status || null,
+    gendertrip: trip?.gendertrip
   }));
 
   return formattedTrips;

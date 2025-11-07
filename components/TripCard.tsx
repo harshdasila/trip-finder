@@ -14,8 +14,10 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import TripActions from "./TripActions";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const TripCard = ({ trip, getTrips, type }: any) => {
+  const router = useRouter();
   const {
     trip_id,
     trip_title,
@@ -27,7 +29,8 @@ const TripCard = ({ trip, getTrips, type }: any) => {
     trip_max_budget,
     trip_max_people,
     chat_room_id,
-    gendertrip
+    trip_location,
+    gendertrip,
   } = trip;
   const formattedStartDate = new Date(trip_start_date).toLocaleDateString(
     "en-GB",
@@ -47,11 +50,12 @@ const TripCard = ({ trip, getTrips, type }: any) => {
 
   const requestToJoinTrip = async () => {
     try {
-      if (status === "loading") {
-        return;
-      }
-      if (!session) {
-        return;
+      // if (status === "loading") {
+      //   return;
+      // }
+      if (status === "unauthenticated") {
+        toast.info("Login to join exciting trips.");
+        router.push("/login");
       }
       const result = await Swal.fire({
         input: "textarea",
@@ -126,13 +130,18 @@ const TripCard = ({ trip, getTrips, type }: any) => {
         {/* Trip Features */}
         <div className="space-y-2 mb-4 flex-1">
           <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="w-4 h-4 flex items-center justify-center">📍</span>
+            <span>Trip Location: {trip_location}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="w-4 h-4 flex items-center justify-center">👥</span>
             <span>1 - {trip_max_people} People</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="w-4 h-4 flex items-center justify-center">📍</span>
-            <span>From {trip_starting_location}</span>
+            <span>From: {trip_starting_location}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -156,34 +165,35 @@ const TripCard = ({ trip, getTrips, type }: any) => {
           <TripActions
             cancelTripRequest={cancelTripRequest}
             hasRequested={trip?.has_requested}
-            requestStatus = {trip?.request_status}
+            requestStatus={trip?.request_status}
             requestToJoinTrip={requestToJoinTrip}
             tripId={trip?.trip_id}
             genderSpecific={gendertrip}
+            tripStartDate={trip_start_date}
+            tripEndDate={trip_end_date}
           />
         )}
         {type === "myTrips" && (
           <div className="mt-4">
             <Link
               href={`/${trip_id}/requests`}
+              prefetch={true}
               className="block w-full text-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
             >
               View Requests
             </Link>
           </div>
         )}
-        {
-          type === "acceptedTrips" && (
-            <div className="mt-4">
-              <Link
+        {type === "acceptedTrips" && (
+          <div className="mt-4">
+            <Link
               href={`/chat/${chat_room_id}`}
               className="block w-full text-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
             >
               Chat
             </Link>
-            </div>
-          )
-        }
+          </div>
+        )}
       </div>
     </div>
   );

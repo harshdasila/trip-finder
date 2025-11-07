@@ -16,9 +16,17 @@ import Header from "@/components/Header";
 import { Search, X } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { redirect } from "next/navigation";
+import SelectGenderModal from "@/components/SelectGenderModal";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const [showGenderModal, setShowGenderModal] = useState(false);
+  const { data: session, status }: any = useSession();
+  // if(session?.user?.gender === "Other"){
+  //   setShowGenderModal(true);
+  // }
   const [trips, setTrips] = useState<any>([]);
   const [acceptedTrips, setAcceptedTrips] = useState<any>([]);
   const [tripsToShow, setTripsToShow] = useState<any>([]);
@@ -59,13 +67,26 @@ const Page = () => {
   };
 
   const filterTripsToShow = (t: any, session: any) => {
-    if (!session?.user?.id) return [];
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    if (!session?.user?.id) return t;
     return t.filter(
       (trip: any) =>
         trip.trip_owner_id !== session.user.id &&
-        trip.request_status !== "ACCEPTED"
+        trip.request_status !== "ACCEPTED" &&
+        new Date(trip?.trip_end_date) >= currentDate
     );
   };
+
+  const handleAuthCheckAndRedirect = (url: string) => {
+    if(status === "unauthenticated"){
+            toast.info("Login to join exciting trips.")
+            router.push("/login")
+          }
+    else{
+      router.push(url);
+    }
+  }
 
   const handleSearch = async () => {
     const query = searchQuery.trim();
@@ -77,6 +98,11 @@ const Page = () => {
   useEffect(() => {
     getTrips();
   }, []);
+  useEffect(() => {
+    if (session?.user?.gender === "Other") {
+      setShowGenderModal(true);
+    }
+  }, [session?.user?.gender]);
 
   if (loading) {
     return (
@@ -92,6 +118,7 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
+      {showGenderModal && <SelectGenderModal />}
       <Header
         title="Explore Trips"
         subtitle="Discover and join trips near you"
@@ -179,14 +206,23 @@ const Page = () => {
               )}
             </button>
           </div>
-          <button
-            onClick={() => redirect('/add-trip')}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
-          >
-            
-            Create Trip
-            <Plus className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleAuthCheckAndRedirect("/my-trips")}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
+            >
+              <Calendar className="w-4 h-4" />
+              My Posted Trips
+            </button>
+            <button
+              onClick={() => handleAuthCheckAndRedirect("/add-trip")}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
+            >
+              Create Trip
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 

@@ -9,6 +9,8 @@ const TripActions = ({
   tripId,
   requestToJoinTrip,
   genderSpecific,
+  tripStartDate,
+  tripEndDate
 }: {
   hasRequested: any;
   requestStatus: any;
@@ -16,8 +18,11 @@ const TripActions = ({
   tripId: any;
   requestToJoinTrip: any;
   genderSpecific: any;
+  tripStartDate: any;
+  tripEndDate: any
 }) => {
-  const { data }: any = useSession();
+  console.log(genderSpecific,'thissss')
+  const { data, status }: any = useSession();
   return (
     <>
       {hasRequested === true && requestStatus == "PENDING" && (
@@ -32,11 +37,13 @@ const TripActions = ({
           </div>
         </div>
       )}
-      {(hasRequested === false || (hasRequested ==true && requestStatus=="REJECTED"))&& (
+      {(hasRequested === false ||
+        (hasRequested == true && requestStatus == "REJECTED")) && (
         <div className="mt-auto pt-3">
           <button
             onClick={() => {
               if (
+                status==="authenticated" &&
                 genderSpecific !== "mixed" &&
                 data?.user?.gender?.toUpperCase() !==
                   genderSpecific?.toUpperCase()
@@ -47,11 +54,12 @@ const TripActions = ({
               requestToJoinTrip();
             }}
             className={`w-full text-white py-2.5 px-4 rounded-lg font-medium transition-colors duration-200 ${
-              genderSpecific === "mixed" ||
-              data?.user?.gender?.toUpperCase() ===
-                genderSpecific?.toUpperCase()
+              status === "authenticated" &&
+              (genderSpecific === "mixed" ||
+                data?.user?.gender?.toUpperCase() ===
+                  genderSpecific?.toUpperCase())
                 ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                : "bg-gray-400 cursor-not-allowed"
+                : "bg-gray-500 cursor-pointer"
             }`}
           >
             Request to Join Trip

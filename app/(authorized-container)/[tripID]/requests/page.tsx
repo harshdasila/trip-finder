@@ -99,9 +99,9 @@ const Page = async ({ params }: { params: Promise<{ tripID: string }> }) => {
                   <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-3">
                     <span className="text-2xl">📸</span>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Add Photos</h4>
+                  <h4 className="font-semibold text-gray-900 mb-1">Add Description</h4>
                   <p className="text-sm text-gray-600">
-                    Trips with photos get 3x more requests
+                    Trips with Description get 3x more requests
                   </p>
                 </div>
                 

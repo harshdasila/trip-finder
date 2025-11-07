@@ -70,6 +70,9 @@ export const getUserDetails = async(id: any) => {
         const user = await prisma?.user?.findFirst({
             where:{
                 user_id: id
+            },
+            select:{
+                gender: true
             }
         });
         return user;

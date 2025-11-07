@@ -1,4 +1,3 @@
-// components/TripChat.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -13,6 +12,23 @@ interface CurrentUser {
 interface TripChatProps {
   tripID: string;
   currentUser: CurrentUser;
+}
+
+// --- helper functions ---
+function getInitials(name: string): string {
+  if (!name) return "";
+  const parts = name.trim().split(" ");
+  const first = parts[0]?.[0]?.toUpperCase() || "";
+  const second = parts[1]?.[0]?.toUpperCase() || "";
+  return (first + second) || first;
+}
+
+function getRandomColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return `hsl(${hash % 360}, 70%, 60%)`;
 }
 
 export function TripChat({ tripID, currentUser }: TripChatProps) {
@@ -46,9 +62,7 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
       await sendMessage(inputMessage);
       setInputMessage("");
 
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       sendTypingIndicator(false);
       setIsTyping(false);
     } catch (error) {
@@ -64,9 +78,7 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
       sendTypingIndicator(true);
     }
 
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
@@ -88,11 +100,32 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
       <div className="bg-white shadow-md border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-bold text-xl text-gray-800">Trip Chat</h3>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Plan your adventure together
-              </p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => window.history.back()}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                title="Go back"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <div>
+                <h3 className="font-bold text-xl text-gray-800">Trip Chat</h3>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  Plan your adventure together
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
               <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
@@ -132,68 +165,83 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
               </p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.sender_id === currentUser.user_id
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
+            messages.map((message) => {
+              const initials = getInitials(message.sender_name);
+              const bgColor = getRandomColor(message.sender_name);
+              return (
                 <div
-                  className={`flex max-w-[70%] gap-3 ${
+                  key={message.id}
+                  className={`flex ${
                     message.sender_id === currentUser.user_id
-                      ? "flex-row-reverse"
-                      : "flex-row"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
-                  {message.sender_id !== currentUser.user_id && (
-                    <img
-                      src={message.sender_image || "/default-avatar.png"}
-                      alt={message.sender_name}
-                      className="w-10 h-10 rounded-full object-cover shadow-md ring-2 ring-white"
-                    />
-                  )}
                   <div
-                    className={
+                    className={`flex max-w-[70%] gap-3 ${
                       message.sender_id === currentUser.user_id
-                        ? "items-end"
-                        : "items-start"
-                    }
+                        ? "flex-row-reverse"
+                        : "flex-row"
+                    }`}
                   >
+                    {/* ✅ Avatar section */}
                     {message.sender_id !== currentUser.user_id && (
-                      <p className="text-xs font-medium text-gray-600 mb-1 px-1">
-                        {message.sender_name}
-                      </p>
+                      message.sender_image ? (
+                        <img
+                          src={message.sender_image}
+                          alt={message.sender_name}
+                          className="w-10 h-10 rounded-full object-cover shadow-md ring-2 ring-white"
+                        />
+                      ) : (
+                        <div
+                          style={{ backgroundColor: bgColor }}
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold shadow-md ring-2 ring-white"
+                        >
+                          {initials}
+                        </div>
+                      )
                     )}
+
                     <div
-                      className={`px-5 py-3 rounded-3xl shadow-sm ${
+                      className={
                         message.sender_id === currentUser.user_id
-                          ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md"
-                          : "bg-white text-gray-800 rounded-bl-md"
-                      }`}
+                          ? "items-end"
+                          : "items-start"
+                      }
                     >
-                      <p className="break-words leading-relaxed">
-                        {message.content}
-                      </p>
-                      <p
-                        className={`text-xs mt-1.5 ${
+                      {message.sender_id !== currentUser.user_id && (
+                        <p className="text-xs font-medium text-gray-600 mb-1 px-1">
+                          {message.sender_name}
+                        </p>
+                      )}
+                      <div
+                        className={`px-5 py-3 rounded-3xl shadow-sm ${
                           message.sender_id === currentUser.user_id
-                            ? "text-blue-100"
-                            : "text-gray-400"
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md"
+                            : "bg-white text-gray-800 rounded-bl-md"
                         }`}
                       >
-                        {new Date(message.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                        <p className="break-words leading-relaxed">
+                          {message.content}
+                        </p>
+                        <p
+                          className={`text-xs mt-1.5 ${
+                            message.sender_id === currentUser.user_id
+                              ? "text-blue-100"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {new Date(message.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
           {/* Typing Indicators */}
@@ -222,7 +270,7 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
         </div>
       </div>
 
-      {/* Input Area - Fixed at Bottom */}
+      {/* Input Area */}
       <div className="bg-white border-t border-gray-200 shadow-lg">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <form onSubmit={handleSubmit} className="flex items-center gap-3">
@@ -233,8 +281,6 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
               placeholder="Type your message..."
               className="flex-1 px-5 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 text-gray-800 placeholder-gray-400"
             />
-
-            {/* fixed small width so it never expands */}
             <button
               type="submit"
               disabled={!inputMessage.trim()}
