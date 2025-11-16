@@ -20,7 +20,7 @@ function getInitials(name: string): string {
   const parts = name.trim().split(" ");
   const first = parts[0]?.[0]?.toUpperCase() || "";
   const second = parts[1]?.[0]?.toUpperCase() || "";
-  return (first + second) || first;
+  return first + second || first;
 }
 
 function getRandomColor(name: string): string {
@@ -45,6 +45,8 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
     sendMessage,
     sendTypingIndicator,
   } = useSupabaseChat(tripID, currentUser);
+  console.log(messages, "messages");
+  const grouped = groupMessagesByDate(messages);
 
   useEffect(() => {
     scrollToBottom();
@@ -85,6 +87,41 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
       sendTypingIndicator(false);
     }, 2000);
   };
+
+  function groupMessagesByDate(messages: any[]) {
+    const groups: Record<string, any[]> = {};
+
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const isSameDay = (d1: Date, d2: Date) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    for (const msg of messages) {
+      const msgDate = new Date(msg.created_at);
+      let label = "";
+
+      if (isSameDay(msgDate, today)) {
+        label = "Today";
+      } else if (isSameDay(msgDate, yesterday)) {
+        label = "Yesterday";
+      } else {
+        label = msgDate.toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      }
+
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(msg);
+    }
+
+    return groups;
+  }
 
   if (loading) {
     return (
@@ -140,6 +177,7 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto px-6 py-6 space-y-4">
+          {/* ✅ No messages */}
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-20">
               <div className="bg-white rounded-full p-6 shadow-lg mb-4">
@@ -157,6 +195,7 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
                   />
                 </svg>
               </div>
+
               <h4 className="text-xl font-semibold text-gray-700 mb-2">
                 No messages yet
               </h4>
@@ -165,86 +204,105 @@ export function TripChat({ tripID, currentUser }: TripChatProps) {
               </p>
             </div>
           ) : (
-            messages.map((message) => {
-              const initials = getInitials(message.sender_name);
-              const bgColor = getRandomColor(message.sender_name);
-              return (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.sender_id === currentUser.user_id
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`flex max-w-[70%] gap-3 ${
-                      message.sender_id === currentUser.user_id
-                        ? "flex-row-reverse"
-                        : "flex-row"
-                    }`}
-                  >
-                    {/* ✅ Avatar section */}
-                    {message.sender_id !== currentUser.user_id && (
-                      message.sender_image ? (
-                        <img
-                          src={message.sender_image}
-                          alt={message.sender_name}
-                          className="w-10 h-10 rounded-full object-cover shadow-md ring-2 ring-white"
-                        />
-                      ) : (
-                        <div
-                          style={{ backgroundColor: bgColor }}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold shadow-md ring-2 ring-white"
-                        >
-                          {initials}
-                        </div>
-                      )
-                    )}
+            /* ✅ Grouped Messages Section */
+            Object.entries(groupMessagesByDate(messages)).map(
+              ([dateLabel, msgs]) => (
+                <div key={dateLabel}>
+                  {/* ✅ Date Separator */}
+                  <div className="flex justify-center my-4">
+                    <span className="bg-white shadow px-4 py-1 rounded-full text-gray-600 text-sm">
+                      {dateLabel}
+                    </span>
+                  </div>
 
-                    <div
-                      className={
-                        message.sender_id === currentUser.user_id
-                          ? "items-end"
-                          : "items-start"
-                      }
-                    >
-                      {message.sender_id !== currentUser.user_id && (
-                        <p className="text-xs font-medium text-gray-600 mb-1 px-1">
-                          {message.sender_name}
-                        </p>
-                      )}
+                  {/* ✅ Messages inside this date */}
+                  {msgs.map((message: any) => {
+                    const initials = getInitials(message.sender_name);
+                    const bgColor = getRandomColor(message.sender_name);
+
+                    return (
                       <div
-                        className={`px-5 py-3 rounded-3xl shadow-sm ${
+                        key={message.id}
+                        className={`flex ${
                           message.sender_id === currentUser.user_id
-                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md"
-                            : "bg-white text-gray-800 rounded-bl-md"
+                            ? "justify-end"
+                            : "justify-start"
                         }`}
                       >
-                        <p className="break-words leading-relaxed">
-                          {message.content}
-                        </p>
-                        <p
-                          className={`text-xs mt-1.5 ${
+                        <div
+                          className={`flex max-w-[70%] gap-3 ${
                             message.sender_id === currentUser.user_id
-                              ? "text-blue-100"
-                              : "text-gray-400"
+                              ? "flex-row-reverse"
+                              : "flex-row"
                           }`}
                         >
-                          {new Date(message.created_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                          {/* ✅ Avatar section */}
+                          {message.sender_id !== currentUser.user_id &&
+                            (message.sender_image ? (
+                              <img
+                                src={message.sender_image}
+                                alt={message.sender_name}
+                                className="w-10 h-10 rounded-full object-cover shadow-md ring-2 ring-white"
+                              />
+                            ) : (
+                              <div
+                                style={{ backgroundColor: bgColor }}
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold shadow-md ring-2 ring-white"
+                              >
+                                {initials}
+                              </div>
+                            ))}
+
+                          <div
+                            className={
+                              message.sender_id === currentUser.user_id
+                                ? "items-end"
+                                : "items-start"
+                            }
+                          >
+                            {message.sender_id !== currentUser.user_id && (
+                              <p className="text-xs font-medium text-gray-600 mb-1 px-1">
+                                {message.sender_name}
+                              </p>
+                            )}
+
+                            <div
+                              className={`px-5 py-3 rounded-3xl shadow-sm ${
+                                message.sender_id === currentUser.user_id
+                                  ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-md"
+                                  : "bg-white text-gray-800 rounded-bl-md"
+                              }`}
+                            >
+                              <p className="break-words leading-relaxed">
+                                {message.content}
+                              </p>
+
+                              <p
+                                className={`text-xs mt-1.5 ${
+                                  message.sender_id === currentUser.user_id
+                                    ? "text-blue-100"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {new Date(
+                                  message.created_at
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
-              );
-            })
+              )
+            )
           )}
 
-          {/* Typing Indicators */}
+          {/* ✅ Typing Indicators */}
           {typingUsers.length > 0 && (
             <div className="flex items-center gap-3 pl-2">
               <div className="flex space-x-1.5 bg-white px-4 py-3 rounded-3xl shadow-sm">

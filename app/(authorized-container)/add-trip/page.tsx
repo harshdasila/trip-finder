@@ -225,7 +225,7 @@ const Page = () => {
                       {...register("genderTrip")}
                       className="w-4 h-4 text-[#4CAF50] cursor-pointer"
                     />
-                    <span className="ml-2 text-white">Mixed</span>
+                    <span className="ml-2 text-white">Both</span>
                   </label>
                 </div>
                 {errors.genderTrip && (

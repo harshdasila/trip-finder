@@ -7,7 +7,6 @@ import React from "react";
 
 const page = async () => {
   const trips = await getMyTrips();
-  console.log(trips, "tripssss");
   return (
     <div>
       <Header

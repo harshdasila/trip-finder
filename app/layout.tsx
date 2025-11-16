@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html className={poppins.variable}>
-      <body>
+      <body className="bg-[#f2f2f2]">
         <ToastContainer position="top-right"/>
         <Providers>{children}</Providers>
       </body>

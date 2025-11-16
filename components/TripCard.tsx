@@ -1,14 +1,12 @@
 "use client";
 import Image from "next/image";
 import React from "react";
-import tripImage from "../public/assets/trip.png";
+import tripImage from "../public/assets/BANNER.jpg";
 import "../app/globals.css";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import {
   cancelRequestTripAction,
   requestToJoinTripAction,
 } from "@/actions/trip.action";
-import { getSession } from "@/utils/getSession";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -154,7 +152,7 @@ const TripCard = ({ trip, getTrips, type }: any) => {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="w-4 h-4 flex items-center justify-center">💰</span>
             <span>
-              ₹{trip_min_budget.toLocaleString()} - ₹
+              Budget: ₹{trip_min_budget.toLocaleString()} - ₹
               {trip_max_budget.toLocaleString()}
             </span>
           </div>

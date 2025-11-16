@@ -9,12 +9,13 @@ async function getUser() {
 
 export default async function Home() {
   const session = await getUser();
-  if (session?.user?.id) {
-    redirect("/trips");
-  }
-  else{
-    redirect("/login")
-  }
+  // if (session?.user?.id) {
+  //   redirect("/trips");
+  // }
+  // else{
+  //   redirect("/login")
+  // }
+  redirect("/trips");
 
   // return <div>{JSON.stringify(session)}</div>;
 }

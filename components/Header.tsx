@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import tripBuddyLogo from "../public/assets/LOGO.png";
 
 interface PageHeaderProps {
   title: string;
@@ -11,7 +12,7 @@ interface PageHeaderProps {
   showBackButton?: boolean;
   backUrl?: string;
   rightContent?: React.ReactNode;
-  gradient?: "blue" | "purple" | "green" | "orange" | "teal";
+  gradient?: "blue" | "purple" | "green" | "orange" | "teal" | "black";
 }
 
 const Header = ({
@@ -30,15 +31,15 @@ const Header = ({
   const gradientClasses = {
     blue: "from-blue-500 via-blue-600 to-blue-700",
     purple: "from-purple-500 via-purple-600 to-purple-700",
-    green: "from-green-500 via-green-600 to-green-700",
+    green: "bg-[#285936]",
     orange: "from-orange-500 via-orange-600 to-orange-700",
     teal: "from-teal-500 via-teal-600 to-teal-700",
+    black: "from-gray-800 via-gray-900 to-black",
   };
 
   const handleBack = () => {
-    console.log(backUrl,'bac')
     if (backUrl) router.push(backUrl);
-    else router.push('/trips');
+    else router.push("/trips");
   };
 
   const handleLogout = async () => {
@@ -68,6 +69,15 @@ const Header = ({
         <div className="flex items-center justify-between">
           {/* Left Section */}
           <div className="flex items-center gap-3">
+            {!showBackButton && (
+              <div className="w-15 h-15">
+                <img
+                  src={tripBuddyLogo.src}
+                  alt="TripBuddy Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
             {showBackButton && (
               <button
                 onClick={handleBack}

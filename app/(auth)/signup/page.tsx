@@ -24,12 +24,12 @@ const page = () => {
 
   const handleGoogleLogin = () => {
     signIn("google", {
-      callbackUrl: "/dashboard",
+      callbackUrl: "/trips",
     });
   };
 
   const onSubmit = async (data: signUpFormData) => {
-    console.log(data,'data')
+    console.log(data, "data");
     const schemaParse = signupSchema.safeParse(data);
     if (!schemaParse.success) {
       return;

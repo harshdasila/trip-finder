@@ -77,6 +77,6 @@ export const getUserDetails = async(id: any) => {
         });
         return user;
     } catch (error) {
-        console.error("Error in getting user details");
+        console.error("Error in getting user details", error);
     }
 }

@@ -23,6 +23,7 @@ export default function SelectGenderModal() {
       if (response) {
         toast.success("Gender Updated successfully.")
         setIsOpen(false);
+        window.location.reload();
       }
     } catch (error) {
       console.error('Error updating gender:', error);

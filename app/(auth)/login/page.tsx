@@ -33,16 +33,16 @@ const page = () => {
     formData.append("email", data.email);
     formData.append("password", data.password);
     const result = await signin(formData);
-    console.log(result,'result in frontend')
-    if(!result){
+    console.log(result, "result in frontend");
+    if (!result) {
       alert("invalid id/password");
       return;
     }
-    if(result.success == true){
+    if (result.success == true) {
       const location = await getUserLocation();
       await updateUserLocation(String(location.lat), String(location.lon));
-      localStorage.setItem('userLocation', JSON.stringify(location));
-      window.location.href = '/trips'
+      localStorage.setItem("userLocation", JSON.stringify(location));
+      window.location.href = "/trips";
     }
     //login to handle navigation
     reset();
@@ -71,13 +71,16 @@ const page = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-black">
       <div className="w-[430px] h-auto p-6 rounded-lg bg-black">
-        <div className="mb-3 bg-black">
-          <div className="text-white text-4xl font-bold">Login</div>
+        <div className="mb-6">
+          {/* ✅ Header */}
+          <div className="text-white text-4xl font-bold mb-6">Login</div>
+
+          {/* ✅ Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-3">
+            <div className="mb-4">
               <Input
                 label="Email"
-                placeholder="Enter you registered email."
+                placeholder="Enter your registered email."
                 type="text"
                 name="email"
                 register={register}
@@ -86,10 +89,11 @@ const page = () => {
                 <ErrorMessage text={errors.email.message || null} />
               )}
             </div>
-            <div className="mb-3">
+
+            <div className="mb-4">
               <Input
                 label="Password"
-                placeholder="Enter Your Password."
+                placeholder="Enter your password."
                 type="password"
                 name="password"
                 register={register}
@@ -98,27 +102,38 @@ const page = () => {
                 <ErrorMessage text={errors.password.message || null} />
               )}
             </div>
-            <button type="submit">Sign In</button>
+
+            {/* ✅ Sign In Button */}
+            <button
+              type="submit"
+              className="w-full py-3 mt-2 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition cursor-pointer"
+            >
+              Sign In
+            </button>
           </form>
-          <div className="mt-6">
+
+          {/* ✅ Divider */}
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">
+                <span className="px-2 bg-black text-gray-400">
                   Or continue with
                 </span>
               </div>
             </div>
           </div>
+
+          {/* ✅ Google Login Button */}
           {providers?.google && (
             <div className="mt-6">
               <button
                 onClick={handleGoogleLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="w-full cursor-pointer inline-flex justify-center items-center py-2 px-4 border border-gray-700 rounded-md bg-white text-gray-700 text-sm font-medium hover:bg-gray-200 transition shadow"
               >
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-2 " viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -140,6 +155,19 @@ const page = () => {
               </button>
             </div>
           )}
+
+          {/* ✅ Footer — Signup */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              Don’t have an account?{" "}
+              <span
+                onClick={() => (window.location.href = "/signup")}
+                className="text-white font-semibold cursor-pointer hover:underline"
+              >
+                Sign up
+              </span>
+            </p>
+          </div>
         </div>
       </div>
     </div>

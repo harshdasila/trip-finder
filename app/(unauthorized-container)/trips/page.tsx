@@ -116,13 +116,13 @@ const Page = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
       {showGenderModal && <SelectGenderModal />}
       <Header
         title="Explore Trips"
         subtitle="Discover and join trips near you"
-        gradient="teal"
+        gradient="blue"
         rightContent={
           <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
             {" "}
