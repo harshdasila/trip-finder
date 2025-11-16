@@ -54,6 +54,7 @@ export const NEXT_AUTH: any = {
     callbacks: {
         async signIn({ user, account, profile }: any) {
             if (account?.provider === 'google') {
+                console.log("reaching inside google oath")
                 try {
                     const existingUser = await prisma.user.findUnique({
                         where: { user_google_id: profile.sub }
@@ -67,8 +68,10 @@ export const NEXT_AUTH: any = {
                                 user_image: profile.picture,
                             }
                         });
+                        console.log(newUser,'new user')
                         user.dbId = newUser.user_id;
                     }
+                    
                     else {
                         await prisma.user.update({
                             where: {
