@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { getMyTrips } from "@/actions/trip.action";
 import Header from "@/components/Header";
 import TripCard from "@/components/TripCard";
