@@ -1,10 +1,11 @@
 "use server"
 
+import prisma from "@/db";
 import { RequestType } from "@/interfaces/trip.interface";
 
 export const getTripRequests = async(tripId: string) => {
   try {
-    const response = await prisma?.request.findMany({
+    const response = await prisma.request.findMany({
       where:{
         trip_id: tripId
       },
@@ -26,7 +27,7 @@ export const getTripRequests = async(tripId: string) => {
 
 export const updateTripRequest = async(requestId: string, status: RequestType) => {
     try {
-        const result = await prisma?.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx) => {
             const request = await tx.request.findUnique({
                 where: {
                     request_id: requestId

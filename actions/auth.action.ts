@@ -68,7 +68,7 @@ export const signin = async (formData: FormData): Promise<any> => {
 
 export const getUserDetails = async(id: any) => {
     try {
-        const user = await prisma?.user?.findFirst({
+        const user = await prisma.user.findFirst({
             where:{
                 user_id: id
             },

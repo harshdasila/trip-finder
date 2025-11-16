@@ -1,5 +1,6 @@
 "use server"
 
+import prisma from "@/db";
 import { auth } from "@/lib/auth";
 
 function toLocalDate(dateStr: string) {
@@ -32,7 +33,7 @@ export const addTrip = async (formData: FormData): Promise<any> => {
     }
 
     // Create trip and explicitly select trip_id
-    const response = await prisma?.trip.create({
+    const response = await prisma.trip.create({
       data: {
         trip_title: title,
         trip_max_people: maxPeople,
@@ -62,14 +63,14 @@ export const addTrip = async (formData: FormData): Promise<any> => {
     }
 
     // Create chat room for the trip
-    const addTripChat = await prisma?.chatRoom?.create({
+    const addTripChat = await prisma.chatRoom.create({
       data: {
         trip_id: response.trip_id
       }
     });
 
     //add the trip owner to the participant
-    const addOwnerToTrip = await prisma?.tf_trip_participants.create({
+    const addOwnerToTrip = await prisma.tf_trip_participants.create({
       data: {
         trip_id: response.trip_id,
         user_id: session?.user?.id,
@@ -101,7 +102,7 @@ export const addTrip = async (formData: FormData): Promise<any> => {
 
 export const getTrips = async (userLon: number, userLat: number): Promise<any> => {
   try {
-    const response = await prisma?.$queryRawUnsafe(`
+    const response = await prisma.$queryRawUnsafe(`
         SELECT 
         *,
         ST_Distance(
@@ -143,7 +144,7 @@ export async function getAllTripsNearby(
   limit: number = 20
 ): Promise<NearbyTripResult[]> {
   try {
-    const nearbyTrips = await prisma?.$queryRawUnsafe(`
+    const nearbyTrips = await prisma.$queryRawUnsafe(`
   SELECT 
     t."trip_id",
     t."trip_title",
@@ -186,14 +187,14 @@ export async function getAllTripsNearby(
 
 export async function requestToJoinTripAction(userId: any, tripId: any, text: any) {
   try {
-    const ifRequestAlreadyExists = await prisma?.request?.findFirst({
+    const ifRequestAlreadyExists = await prisma.request.findFirst({
       where:{
         trip_id: tripId,
         request_user_id: userId
       }
     });
     if(ifRequestAlreadyExists){
-      const response = await prisma?.request?.update({
+      const response = await prisma.request.update({
         where: {
           request_user_id_trip_id: {
             trip_id: tripId,
@@ -207,7 +208,7 @@ export async function requestToJoinTripAction(userId: any, tripId: any, text: an
       });
       return response;
     }
-    const reponse = await prisma?.request?.create({
+    const reponse = await prisma.request.create({
       data: {
         trip_id: tripId,
         request_user_id: userId,
@@ -225,7 +226,7 @@ export async function cancelRequestTripAction(userId: any, tripId: any) {
     if (!userId || !tripId) {
       return null;
     }
-    const response = await prisma?.request?.delete({
+    const response = await prisma.request.delete({
       where: {
         request_user_id_trip_id: {
           trip_id: tripId,
@@ -242,7 +243,7 @@ export async function cancelRequestTripAction(userId: any, tripId: any) {
 export const getMyTrips = async () => {
   try {
     const session = await auth();
-    const response = await prisma?.trip?.findMany({
+    const response = await prisma.trip.findMany({
       where: {
         trip_owner_id: session?.user?.id
       }
@@ -255,7 +256,7 @@ export const getMyTrips = async () => {
 
 export const ifTripExistAction = async (tripId: string) => {
   try {
-    const reponse = await prisma?.trip.findUnique({
+    const reponse = await prisma.trip.findUnique({
       where: {
         trip_id: tripId
       }
@@ -267,7 +268,7 @@ export const ifTripExistAction = async (tripId: string) => {
 }
 
 export const commonSearchAction = async (searchQuery: string, userId: string) => {
-  const trips = await prisma?.trip.findMany({
+  const trips = await prisma.trip.findMany({
     where: {
       OR: [
         {

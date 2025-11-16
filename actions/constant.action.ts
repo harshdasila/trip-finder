@@ -43,7 +43,7 @@ export const updateUserLocation = async (lat: string, lon: string): Promise<any>
   try {
     const session = await auth();
     if (lat && lon) {
-      const reponse = await prisma?.user?.update({
+      const reponse = await prisma.user.update({
         where: {
           user_id: session?.user?.id
         },

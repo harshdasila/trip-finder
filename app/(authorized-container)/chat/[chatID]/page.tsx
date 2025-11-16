@@ -1,7 +1,7 @@
 
 import { TripChat } from "@/components/TripChat";
-import { auth, NEXT_AUTH } from "@/lib/auth";
-import getServerSession  from "next-auth"
+import prisma from "@/db";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -18,7 +18,7 @@ export default async function ChatPage({ params }: PageProps) {
     redirect("/login");
   }
   // Get user from database using email from session
-  const user = await prisma?.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       user_email: session.user.email ?? undefined,
     },
@@ -34,7 +34,7 @@ export default async function ChatPage({ params }: PageProps) {
     redirect("/login");
   }
   
-  const chatRoom = await prisma?.chatRoom.findUnique({
+  const chatRoom = await prisma.chatRoom.findUnique({
   where: {
     id: chatID,
   },

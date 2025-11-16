@@ -1,3 +1,4 @@
+import prisma from '@/db';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
-    const response = await prisma?.constants.update({
+    const response = await prisma.constants.update({
       where: {
         constant_slug: "google_maps"
       },
