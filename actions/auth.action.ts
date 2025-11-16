@@ -1,7 +1,7 @@
 "use server"
 
-import { signIn } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db"
+import { signIn } from "@/lib/auth";
 import { SALT_ROUNDS } from "@/lib/constants";
 import bcrypt from 'bcrypt'
 

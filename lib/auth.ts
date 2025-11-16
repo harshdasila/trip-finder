@@ -122,4 +122,4 @@ export const NEXT_AUTH: any = {
 // Create a separate auth.ts file or add to lib/auth.ts
 import NextAuth from "next-auth";
 
-export const { auth } = NextAuth(NEXT_AUTH);
+export const { auth, signIn, signOut } = NextAuth(NEXT_AUTH);
