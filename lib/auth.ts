@@ -53,9 +53,6 @@ export const NEXT_AUTH: any = {
     secret: process.env.AUTH_SECRET,
     callbacks: {
         async signIn({ user, account, profile }: any) {
-            console.log(account, 'account on top');
-            console.log(user, 'user on top')
-            console.log(profile, 'profile on top')
             if (account?.provider === 'google') {
                 try {
                     const existingUser = await prisma.user.findUnique({
@@ -122,3 +119,7 @@ export const NEXT_AUTH: any = {
         signIn: "/login",
     },
 }
+// Create a separate auth.ts file or add to lib/auth.ts
+import NextAuth from "next-auth";
+
+export const { auth } = NextAuth(NEXT_AUTH);

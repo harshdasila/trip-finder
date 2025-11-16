@@ -1,8 +1,9 @@
 "use server"
-import { signIn } from "@/app/api/auth/[...nextauth]/route";
+
 import prisma from "@/db"
 import { SALT_ROUNDS } from "@/lib/constants";
 import bcrypt from 'bcrypt'
+import { signIn } from "next-auth/react";
 
 const ifUserExists = async (email: string) => {
     const response = await prisma.user.findFirst({

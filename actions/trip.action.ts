@@ -1,5 +1,6 @@
 "use server"
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+
+import { auth } from "@/lib/auth";
 
 function toLocalDate(dateStr: string) {
   const utcDate = new Date(dateStr); // parse ISO from frontend

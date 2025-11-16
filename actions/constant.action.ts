@@ -1,6 +1,6 @@
 "use server"
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db"
+import { auth } from "@/lib/auth";
 
 export const getGoogleMapsApiCalls = async () => {
   const response = await prisma.constants.findUnique({

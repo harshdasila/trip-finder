@@ -1,6 +1,4 @@
 import React from "react";
-import { auth } from "../api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
 

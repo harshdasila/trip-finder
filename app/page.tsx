@@ -1,6 +1,4 @@
-import { NEXT_AUTH } from "@/lib/auth";
-import getServerSession from "next-auth";
-import { auth } from "./api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 async function getUser() {
   const session = await auth();

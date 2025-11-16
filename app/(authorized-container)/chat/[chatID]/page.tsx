@@ -1,6 +1,6 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+
 import { TripChat } from "@/components/TripChat";
-import { NEXT_AUTH } from "@/lib/auth";
+import { auth, NEXT_AUTH } from "@/lib/auth";
 import getServerSession  from "next-auth"
 import { redirect } from "next/navigation";
 import React from "react";
