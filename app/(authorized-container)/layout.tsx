@@ -13,7 +13,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
     <div>
       {/* Add your authorized layout here (sidebar, navbar, etc.) */}
       <main>{children}</main>
-      <div className="flex justify-center item-center">Made with ❤️ by Harsh Dasila</div>
+      {/* <div className="flex justify-center item-center">Made with ❤️ by Harsh Dasila</div> */}
     </div>
   );
 };

@@ -23,6 +23,7 @@ const page = () => {
     resolver: zodResolver(siginSchema),
   });
   const [providers, setProviders] = useState<any>(null);
+  const [loader, setLoader] = useState(false);
 
   const onSubmit = async (data: signInFormData) => {
     const schemaParse = siginSchema.safeParse(data);

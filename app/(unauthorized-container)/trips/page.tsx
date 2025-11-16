@@ -19,6 +19,7 @@ import { redirect } from "next/navigation";
 import SelectGenderModal from "@/components/SelectGenderModal";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { SkeletonLoader } from "@/components/Loader";
 
 const Page = () => {
   const router = useRouter();
@@ -31,6 +32,7 @@ const Page = () => {
   const [acceptedTrips, setAcceptedTrips] = useState<any>([]);
   const [tripsToShow, setTripsToShow] = useState<any>([]);
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
   const [activeTab, setActiveTab] = useState<"discover" | "accepted">(
     "discover"
   );
@@ -84,6 +86,7 @@ const Page = () => {
             router.push("/login")
           }
     else{
+      setRedirecting(true);
       router.push(url);
     }
   }
@@ -104,15 +107,8 @@ const Page = () => {
     }
   }, [session?.user?.gender]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading amazing trips...</p>
-        </div>
-      </div>
-    );
+  if (loading || redirecting) {
+    return <SkeletonLoader />;
   }
 
   return (
