@@ -8,9 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "@/components/ErrorMessage";
-import { signIn } from "next-auth/react";
+
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "@/app/api/auth/[...nextauth]/route";
 
 const page = () => {
   const {
