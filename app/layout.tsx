@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
 import Providers from "./providers";
 import { Poppins } from 'next/font/google';
 import { ToastContainer } from "react-toastify";
@@ -19,10 +17,8 @@ const poppins = Poppins({
 
 export default function RootLayout({
   children,
-  session,
 }: Readonly<{
   children: React.ReactNode;
-  session: any;
 }>) {
   return (
     <html className={poppins.variable}>
