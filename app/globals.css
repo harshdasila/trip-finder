@@ -27,7 +27,7 @@ sup{
   background-size: cover;
   background-position: center;
   position: relative;
-  display: flex;
+  /* Remove display: flex; */
   align-items: flex-start;
   justify-content: flex-start;
   color: white;

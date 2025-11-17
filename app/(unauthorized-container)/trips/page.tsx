@@ -81,15 +81,14 @@ const Page = () => {
   };
 
   const handleAuthCheckAndRedirect = (url: string) => {
-    if(status === "unauthenticated"){
-            toast.info("Login to join exciting trips.")
-            router.push("/login")
-          }
-    else{
+    if (status === "unauthenticated") {
+      toast.info("Login to join exciting trips.");
+      router.push("/login");
+    } else {
       setRedirecting(true);
       router.push(url);
     }
-  }
+  };
 
   const handleSearch = async () => {
     const query = searchQuery.trim();
@@ -130,14 +129,14 @@ const Page = () => {
 
       {/* Stats Bar */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-8">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
                 <div>
                   <p className="text-xs text-gray-500">Available Trips</p>
-                  <p className="text-lg font-bold text-gray-900">
+                  <p className="text-base sm:text-lg font-bold text-gray-900">
                     {tripsToShow.length}
                   </p>
                 </div>
@@ -146,7 +145,7 @@ const Page = () => {
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <div>
                   <p className="text-xs text-gray-500">Your Trips</p>
-                  <p className="text-lg font-bold text-gray-900">
+                  <p className="text-base sm:text-lg font-bold text-gray-900">
                     {acceptedTrips.length}
                   </p>
                 </div>
@@ -155,23 +154,25 @@ const Page = () => {
 
             {/* Search Bar */}
             {activeTab === "discover" && (
-              <SearchBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                handleSearch={handleSearch}
-              />
+              <div className="w-full sm:w-auto">
+                <SearchBar
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  handleSearch={handleSearch}
+                />
+              </div>
             )}
           </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="max-w-7xl mx-auto px-6 pt-8">
-        <div className="flex items-center justify-between border-b border-gray-200 mb-8">
-          <div className="flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+        <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab("discover")}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-medium whitespace-nowrap transition-all ${
                 activeTab === "discover"
                   ? "text-blue-600 border-b-2 border-blue-600"
                   : "text-gray-500 hover:text-gray-700"
@@ -187,7 +188,7 @@ const Page = () => {
             </button>
             <button
               onClick={() => setActiveTab("accepted")}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-medium whitespace-nowrap transition-all ${
                 activeTab === "accepted"
                   ? "text-green-600 border-b-2 border-green-600"
                   : "text-gray-500 hover:text-gray-700"
@@ -203,17 +204,26 @@ const Page = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right Actions */}
+          <div className="flex lg:flex-row sm:flex-col xs:flex-row items-stretch xs:items-center gap-2 sm:gap-3 mt-1 sm:mt-0 w-full sm:w-auto">
             <button
               onClick={() => handleAuthCheckAndRedirect("/my-trips")}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
+              className="flex items-center justify-center gap-1.5 sm:gap-2 
+                   bg-blue-600 hover:bg-blue-700 text-white font-medium 
+                   px-3 py-2 sm:px-5 sm:py-2.5 
+                   rounded-lg transition-colors shadow-sm cursor-pointer
+                   text-sm sm:text-base w-full xs:w-auto"
             >
               <Calendar className="w-4 h-4" />
               My Posted Trips
             </button>
             <button
               onClick={() => handleAuthCheckAndRedirect("/add-trip")}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
+              className="flex items-center justify-center gap-1.5 sm:gap-2 
+                   bg-blue-600 hover:bg-blue-700 text-white font-medium 
+                   px-3 py-2 sm:px-6 sm:py-2.5 
+                   rounded-lg transition-colors shadow-sm cursor-pointer
+                   text-sm sm:text-base w-full xs:w-auto"
             >
               Create Trip
               <Plus className="w-4 h-4" />
@@ -223,18 +233,21 @@ const Page = () => {
       </div>
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10 sm:pb-12">
         {activeTab === "discover" ? (
           <>
             {tripsToShow.length > 0 ? (
               <>
-                <div className="flex items-center gap-2 mb-6">
-                  <TrendingUp className="w-5 h-5 text-gray-600" />
-                  <h2 className="text-xl font-bold text-gray-900">
-                    Popular Trips Near You
-                  </h2>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-gray-600" />
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                      Popular Trips Near You
+                    </h2>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {tripsToShow.map((trip: any) => (
                     <TripCard
                       key={trip.trip_id}
@@ -246,14 +259,14 @@ const Page = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-16">
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-full p-8 w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-                  <MapPin className="w-16 h-16 text-blue-600" />
+              <div className="text-center py-12 sm:py-16 px-4">
+                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-full p-6 sm:p-8 w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6 flex items-center justify-center">
+                  <MapPin className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                   No Trips Available
                 </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
+                <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto">
                   There are no trips available in your area right now. Check
                   back soon or create your own trip!
                 </p>
@@ -264,7 +277,7 @@ const Page = () => {
           <>
             {acceptedTrips.length > 0 ? (
               <>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                     <div>
@@ -279,7 +292,8 @@ const Page = () => {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {acceptedTrips.map((trip: any) => (
                     <TripCard
                       key={trip.trip_id}
@@ -291,20 +305,20 @@ const Page = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-16">
-                <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-full p-8 w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-                  <Calendar className="w-16 h-16 text-green-600" />
+              <div className="text-center py-12 sm:py-16 px-4">
+                <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-full p-6 sm:p-8 w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6 flex items-center justify-center">
+                  <Calendar className="w-12 h-12 sm:w-16 h-16 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                   No Accepted Trips Yet
                 </h3>
-                <p className="text-gray-600 max-w-md mx-auto mb-6">
+                <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4 sm:mb-6">
                   You haven't joined any trips yet. Browse available trips and
                   send requests to start your adventure!
                 </p>
                 <button
                   onClick={() => setActiveTab("discover")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
                 >
                   Explore Trips
                 </button>

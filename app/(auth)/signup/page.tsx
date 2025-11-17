@@ -47,7 +47,7 @@ const page = () => {
   return (
     <>
       <div className="main-container">
-        <div className="signup-image-container">
+        <div className="signup-image-container hidden md:flex">
           <div className="signup-overlay-text">
             Friends that <br /> travel together,
             <br /> stays together.
