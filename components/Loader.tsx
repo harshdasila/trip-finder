@@ -6,7 +6,7 @@ export function SkeletonLoader() {
         <div className="h-8 bg-gray-300 rounded animate-pulse w-1/4 mb-6"></div>
         
         {/* Grid of card skeletons - 2x2 layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden">
               {/* Image placeholder */}

@@ -54,6 +54,7 @@ const TripCard = ({ trip, getTrips, type }: any) => {
       if (status === "unauthenticated") {
         toast.info("Login to join exciting trips.");
         router.push("/login");
+        return;
       }
       const result = await Swal.fire({
         input: "textarea",

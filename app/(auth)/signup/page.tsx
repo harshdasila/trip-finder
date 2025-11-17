@@ -146,7 +146,7 @@ const page = () => {
                   )}
                 </div>
               </div>
-              <button className="font-medium" type="submit">
+              <button className="w-full py-3 mt-2 bg-white text-black font-semibold rounded-md shadow hover:bg-gray-200 transition cursor-pointer" type="submit">
                 Sign Up
               </button>
               <div className="mt-6">
